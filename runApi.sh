@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo nohup python api.py --prod &
+nohup python api.py &

@@ -1,7 +1,9 @@
-import argparse
-
-from flask import Flask
+from bson import json_util
 from dbco import *
+from flask import Flask
+import json
+import pymongo
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -10,24 +12,13 @@ def hello_world():
 
 @app.route('/ask')
 def getRecentArticles():
-    return 'Miaw'
-
-def isProdEnvironment():
-   '''
-   Read the mode from command line flags.
-   
-   Returns True if flag prod is set, False otherwise.
-   '''
-   parser = argparse.ArgumentParser(description='Flags for API server.')
-   parser.add_argument('prod', type=bool, nargs=1, default=False)
-   args = parser.parse_args()
-   return args.prod
+    articles = list(db.qdoc.find().sort('timestamp', pymongo.DESCENDING).limit(50))
+    for article in articles:
+        article['_id'] = str(article['_id'])
+    return json.dumps(articles, default=json_util.default)
 
 def main():
-    if isProdEnvironment():
-        app.run(host='0.0.0.0', port=80)
-    else:
-        app.run()
+    app.run(host='0.0.0.0', port=5000)
    
 if __name__ == '__main__':
     main()
