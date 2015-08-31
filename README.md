@@ -9,8 +9,8 @@ Get access to our annotated articles with keywords, topics, entities.
 Search for Articles
 ------------
 
-#### http://api.retinanews.net/article/recent/<limit>
-Parameters: <limit> replace that by an integer between 1 and 1000. Will return a list of articles <limit> most recent articles in RetinaNews.
+#### http://api.retinanews.net/article/recent/\<limit\>
+Parameters: \<limit\> replace that by an integer between 1 and 1000. Will return a list of articles \<limit\> most recent articles in RetinaNews.
 
 Tools
 -----
