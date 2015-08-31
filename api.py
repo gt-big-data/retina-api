@@ -49,6 +49,7 @@ def getUser():
     Params:
         userId
     """
+    pass
 
 @app.route('/articles/timeline/:keyword')
 def getTimeSeriesData(keyword):
