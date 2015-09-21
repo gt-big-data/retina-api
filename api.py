@@ -1,8 +1,7 @@
 from bson import json_util
 from dbco import *
 from flask import Flask, request
-import json
-import pymongo
+import json, pymongo, time
 
 app = Flask(__name__)
 
@@ -18,6 +17,16 @@ def getRecentArticles(limit):
     for article in articleList:
         article['_id'] = str(article['_id'])
     return json.dumps(articleList, default=json_util.default)
+
+@app.route('/article/lasthours/<hours>')
+def getLastHoursArticles(hours):
+    timestamp = time.time()- int(hours)*60*60
+    articles = db.qdoc.find({'timestamp': {'$gte': timestamp}}).limit(10000)
+    articleList = list(articles)
+    articleReturn = []
+    for a in articleList:
+        articleReturn.push({'title': a['title'], 'keywords': a['keywords'], 'topic': a['topic'], 'source': a['source']})
+    return json.dumps(articleReturn, default=json_util.default)
 
 @app.route('/articles/:id')
 def getArticleById(id):
