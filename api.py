@@ -1,6 +1,6 @@
 from bson import json_util
 from dbco import *
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import json, pymongo, time
 from flask.ext.cors import CORS
 
@@ -41,7 +41,8 @@ def getArticleById(id):
 @app.route('/articles/sources')
 def getSourcesList():
     """ Get a list of all the sources """
-    pass
+    sources = db.qdoc.distinct('source')
+    return jsonify(data=sources)
 
 @app.route('/articles/keywords')
 def getArticlesWithKeywords():
