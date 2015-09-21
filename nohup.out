@@ -1282,3 +1282,7 @@ ValueError: invalid literal for int() with base 10: 'x'
 143.215.95.17 - - [21/Sep/2015 14:28:22] "GET /article/lasthours/1 HTTP/1.1" 200 -
 143.215.95.17 - - [21/Sep/2015 14:29:48] "GET /article/lasthours/1 HTTP/1.1" 200 -
 143.215.95.17 - - [21/Sep/2015 14:31:37] "GET /article/lasthours/1 HTTP/1.1" 200 -
+143.215.95.17 - - [21/Sep/2015 14:34:43] "GET /article/lasthours/1 HTTP/1.1" 200 -
+143.215.95.17 - - [21/Sep/2015 14:34:44] "GET /article/lasthours/1 HTTP/1.1" 200 -
+185.49.14.190 - - [21/Sep/2015 14:35:40] "GET http://testp3.pospr.waw.pl/testproxy.php HTTP/1.1" 404 -
+12.202.169.254 - - [21/Sep/2015 14:37:05] "GET /article/lasthours/1 HTTP/1.1" 200 -
