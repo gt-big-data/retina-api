@@ -2,8 +2,10 @@ from bson import json_util
 from dbco import *
 from flask import Flask, request
 import json, pymongo, time
+from flask.ext.cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def hello_world():
@@ -25,7 +27,10 @@ def getLastHoursArticles(hours):
     articleList = list(articles)
     articleReturn = []
     for a in articleList:
-        articleReturn.push({'title': a['title'], 'keywords': a['keywords'], 'topic': a['topic'], 'source': a['source']})
+	top = ''
+	if 'topic' in a:
+		top = a['topic']
+        articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
     return json.dumps(articleReturn, default=json_util.default)
 
 @app.route('/articles/:id')
