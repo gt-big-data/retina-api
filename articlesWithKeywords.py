@@ -4,6 +4,6 @@ import json
 from dbco import *
 from collections import Counter
 
-def getArticlesWithKeywords(keywordsInput):
+def getArticlesWithKeywordsFunc(keywordsInput):
     articlesWithKeywords = list(db.qdoc.find({'keywords' : { "$in" : keywordsInput}}))
     return json.dumps(articlesWithKeywords, default = json_util.default)

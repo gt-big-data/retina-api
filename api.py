@@ -3,6 +3,7 @@ from dbco import *
 from flask import Flask, request, jsonify
 import json, pymongo, time
 from flask.ext.cors import CORS
+from articlesWithKeywords import *
 
 app = Flask(__name__)
 CORS(app)
@@ -54,8 +55,9 @@ def getArticlesWithKeywords(keywords):
             keywords (list<str>):
                 list of keywords to match
     """
-    keywords = keywords.split(',').replace(' ','')
-    return getArticlesWithKeywords(keywords)
+#    return keywords.split(',')
+    keywords = keywords.split(',')
+    return getArticlesWithKeywordsFunc(keywords)
 
 @app.route('/user')
 def getUser():
