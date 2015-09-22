@@ -44,8 +44,8 @@ def getSourcesList():
     sources = db.qdoc.distinct('source')
     return jsonify(data=sources)
 
-@app.route('/articles/keywords')
-def getArticlesWithKeywords():
+@app.route('/article/keywords/<keywords>')
+def getArticlesWithKeywords(keywords):
     """
     Get articles who share at least one keyword with one of the keywords
         provided in the params.
@@ -54,7 +54,8 @@ def getArticlesWithKeywords():
             keywords (list<str>):
                 list of keywords to match
     """
-    pass
+    keywords = keywords.split(',').replace(' ','')
+    return getArticlesWithKeywords(keywords)
 
 @app.route('/user')
 def getUser():
