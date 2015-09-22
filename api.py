@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 import json, pymongo, time
 from flask.ext.cors import CORS
 from articlesWithKeywords import *
+from articlesFromSource import *
 
 app = Flask(__name__)
 CORS(app)
@@ -28,22 +29,27 @@ def getLastHoursArticles(hours):
     articleList = list(articles)
     articleReturn = []
     for a in articleList:
-	top = ''
-	if 'topic' in a:
-		top = a['topic']
-        articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
+    	top = ''
+    	if 'topic' in a:
+    		top = a['topic']
+            articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
     return json.dumps(articleReturn, default=json_util.default)
 
-@app.route('/articles/:id')
+@app.route('/article/:id')
 def getArticleById(id):
     """ Get an article by its id."""
     pass
 
-@app.route('/articles/sources')
+@app.route('/article/sources')
 def getSourcesList():
     """ Get a list of all the sources """
     sources = db.qdoc.distinct('source')
     return jsonify(data=sources)
+
+@app.route('/article/source/<source>/limit/<limit>')
+def getSourcesList(source, limit):
+    """ Get <limit> most recent articles from source <source> """
+    return getArticlesFromSource(source, int(limit))
 
 @app.route('/article/keywords/<keywords>')
 def getArticlesWithKeywords(keywords):
@@ -55,7 +61,6 @@ def getArticlesWithKeywords(keywords):
             keywords (list<str>):
                 list of keywords to match
     """
-#    return keywords.split(',')
     keywords = keywords.split(',')
     return getArticlesWithKeywordsFunc(keywords)
 
@@ -63,13 +68,12 @@ def getArticlesWithKeywords(keywords):
 def getUser():
     """
     Get a users info (blocked until we get facebook login working on flask)
-
     Params:
         userId
     """
     pass
 
-@app.route('/articles/timeline/:keyword')
+@app.route('/article/timeline/:keyword')
 def getTimeSeriesData(keyword):
     """
     Get the frequency distribution of articles that contain the keyword. The
