@@ -37,7 +37,7 @@ def getLastHoursArticles(hours):
             articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
     return json.dumps(articleReturn, default=json_util.default)
 
-@app.route('/article/<id>')
+@app.route('/article/id/<articleId>')
 def getArticleById(articleId):
     return getArticleById(articleId)
 
