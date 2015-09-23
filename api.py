@@ -38,7 +38,7 @@ def getLastHoursArticles(hours):
     return json.dumps(articleReturn, default=json_util.default)
 
 @app.route('/article/id/<articleId>')
-def getArticleById(articleId):
+def getArticleByIdFunc(articleId):
     return getArticleById(articleId)
 
 @app.route('/article/sources')
