@@ -5,6 +5,8 @@ import json, pymongo, time
 from flask.ext.cors import CORS
 from articlesWithKeywords import *
 from articlesFromSource import *
+from articleByID import *
+
 
 app = Flask(__name__)
 CORS(app)
@@ -35,10 +37,9 @@ def getLastHoursArticles(hours):
             articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
     return json.dumps(articleReturn, default=json_util.default)
 
-@app.route('/article/:id')
-def getArticleById(id):
-    """ Get an article by its id."""
-    pass
+@app.route('/article/<id>')
+def getArticleById(articleId):
+    return getArticleById(articleId)
 
 @app.route('/article/sources')
 def getSourcesList():
@@ -56,7 +57,6 @@ def getArticlesWithKeywords(keywords):
     """
     Get articles who share at least one keyword with one of the keywords
         provided in the params.
-
         Params:
             keywords (list<str>):
                 list of keywords to match
