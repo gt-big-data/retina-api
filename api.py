@@ -29,9 +29,9 @@ def getLastHoursArticles(hours):
     articleList = list(articles)
     articleReturn = []
     for a in articleList:
-    	top = ''
-    	if 'topic' in a:
-    		top = a['topic']
+        top = ''
+        if 'topic' in a:
+            top = a['topic']
             articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
     return json.dumps(articleReturn, default=json_util.default)
 
@@ -47,7 +47,7 @@ def getSourcesList():
     return jsonify(data=sources)
 
 @app.route('/article/source/<source>/limit/<limit>')
-def getSourcesList(source, limit):
+def getRecentFromSource(source, limit):
     """ Get <limit> most recent articles from source <source> """
     return getArticlesFromSource(source, int(limit))
 
