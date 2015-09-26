@@ -6,7 +6,7 @@ from flask.ext.cors import CORS
 from articlesWithKeywords import *
 from articlesFromSource import *
 from articleByID import *
-
+from tweetLoad import *
 
 app = Flask(__name__)
 CORS(app)
@@ -81,6 +81,10 @@ def getTimeSeriesData(keyword):
     """
     pass
 
+@app.route('/tweet/delay/<delay>/amount/<amount>')
+def getTweets(delay, amount):
+    return loadTweets(delay, amount)
+    
 def main():
     app.debug=True
     app.run(host='0.0.0.0', port=5000)
