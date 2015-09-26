@@ -83,8 +83,9 @@ def getTimeSeriesData(keyword):
 
 @app.route('/tweet/delay/<delay>/amount/<amount>')
 def getTweets(delay, amount):
+    delay = int(delay); amount = int(amount);
     return loadTweets(delay, amount)
-    
+
 def main():
     app.debug=True
     app.run(host='0.0.0.0', port=5000)
