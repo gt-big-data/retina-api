@@ -15,10 +15,14 @@ CORS(app)
 def hello_world():
     return 'Hello World!'
 
-@app.route('/article/recent/<limit>')
-def getRecentArticles(limit):
-    limit = min(int(limit), 1000)
-    articles = db.qdoc.find().sort('timestamp', pymongo.DESCENDING).limit(limit)
+@app.route('/article/recent/<int:page>')
+def getRecentArticles(page):
+    items_per_page = request.args.get('limit')
+    if items_per_page:
+        items_per_page = int(items_per_page)
+    else:
+        items_per_page = 20
+    articles = db.qdoc.find().sort('timestamp', pymongo.DESCENDING).limit(items_per_page).skip((page - 1) * items_per_page)
     articleList = list(articles)
     for article in articleList:
         article['_id'] = str(article['_id'])
