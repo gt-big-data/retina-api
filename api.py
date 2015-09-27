@@ -1,3 +1,4 @@
+import datetime
 from bson import json_util
 from dbco import *
 from flask import Flask, request, jsonify
@@ -84,6 +85,21 @@ def getTimeSeriesData(keyword):
     start and end date will most likely be request parameters.
     """
     pass
+
+@app.route('/trending')
+def get_trending_keywords():
+    today = datetime.datetime.now() - datetime.timedelta(hours=24)
+    time_stamp = int(today.strftime('%s'))
+    match = {'$match': {'timestamp': {'$gte': time_stamp}}}
+    project = {'$unwind': '$keywords'}
+    group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
+    sort = {'$sort': {'total': -1}}
+    limit  = {'$limit': 20}
+    pipeline = [match, project, group, sort, limit]
+    query_result = db.qdoc.aggregate(pipeline)
+    front_end_compatable = lambda x: {'keyword': x['_id'], 'total': x['total']}
+    return jsonify(data=map(front_end_compatable, query_result))
+
 
 @app.route('/tweet/delay/<delay>/amount/<amount>')
 def getTweets(delay, amount):
