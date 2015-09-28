@@ -12,6 +12,12 @@ Search for Articles
 #### http://api.retinanews.net/article/recent/{limit}
 Parameters: {limit} replace that by an integer between 1 and 1000. Will return a list of articles {limit} most recent articles in RetinaNews.
 
+Search for Articles by Keywords
+-------------
+
+#### http://api.retinanews.net/article/keywords/{keywords}
+Parameters: {keywords} replace keywords with strings of keywords seperated by commas. Returns list of articles associated with the keywords inputted.
+
 Tools
 -----
 
