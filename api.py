@@ -23,7 +23,7 @@ def getRecentArticles(page):
         items_per_page = int(items_per_page)
     else:
         items_per_page = 20
-    articles = db.qdoc.find().sort('timestamp', pymongo.DESCENDING).limit(items_per_page).skip((page - 1) * items_per_page)
+    articles = db.qdoc.find(projection={'content': False}).sort('timestamp', pymongo.DESCENDING).limit(items_per_page).skip((page - 1) * items_per_page)
     articleList = list(articles)
     for article in articleList:
         article['_id'] = str(article['_id'])
