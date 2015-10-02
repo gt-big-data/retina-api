@@ -3,7 +3,7 @@
 **What file do you import to connect to the database?**
 
 ```
-from dbco import **
+from dbco import *
 ```
 
 **How do you count the number of elements in collection "tweet"?**
