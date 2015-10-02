@@ -101,6 +101,24 @@ def get_trending_keywords():
     front_end_compatable = lambda x: {'keyword': x['_id'], 'total': x['total']}
     return jsonify(data=map(front_end_compatable, query_result))
 
+@app.route('/cokeywords')
+def get_cokeywords():
+    term = request.args.get('keyword')
+    today = datetime.datetime.now() - datetime.timedelta(hours=24)
+    time_stamp = int(today.strftime('%s'))
+    match = {'$match':
+                {'timestamp': {'$gte': time_stamp},
+                 'keywords': term}
+            }
+    project = {'$unwind': '$keywords'}
+    group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
+    sort = {'$sort': {'total': -1}}
+    limit  = {'$limit': 10}
+    pipeline = [match, project, group, sort, limit]
+    query_result = db.qdoc.aggregate(pipeline)
+    front_end_compatable = lambda x: {'keyword': x['_id'], 'total': x['total']}
+    data = [front_end_compatable(doc) for doc in query_result if doc['_id'] != term]
+    return jsonify(data={'keyword': term, 'children': data})
 
 @app.route('/tweet/delay/<delay>/amount/<amount>')
 def getTweets(delay, amount):

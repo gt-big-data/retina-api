@@ -1,11 +1,12 @@
 # Basic MongoDB queries to know for python:
 
-What file do you import to connect to the database?
+**What file do you import to connect to the database?**
 
 ```
 from dbco import *
 ```
 
+<<<<<<< HEAD
 How do you count the number of articles in collection ''tweet''?
 ```
 number_articles = db.tweet.find().count()
