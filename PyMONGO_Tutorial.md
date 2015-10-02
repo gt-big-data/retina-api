@@ -6,7 +6,7 @@
 from dbco import *
 ```
 
-<<<<<<< HEAD
+
 How do you count the number of articles in collection ''tweet''?
 ```
 number_articles = db.tweet.find().count()
