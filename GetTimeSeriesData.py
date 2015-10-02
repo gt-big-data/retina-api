@@ -20,7 +20,7 @@ def timeSeriesData(keyword):
         bucket[i][0] = startTime + i * bucketSize
         bucket[i][1] = startTime + (i + 1) * bucketSize
     for article in articleList:
-        bucket[(int)((article['timestamp'] - startTime) / bucketSize)][2] += 1
+        bucket[int((article['timestamp'] - startTime) / bucketSize)][2] += 1
 
     data = []
     for i in range(len(bucket)):
