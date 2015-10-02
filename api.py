@@ -7,7 +7,9 @@ from flask.ext.cors import CORS
 from articlesWithKeywords import *
 from articlesFromSource import *
 from articleByID import *
+from articlesLastXHrs import *
 from tweetLoad import *
+from articlesRecent import *
 
 app = Flask(__name__)
 CORS(app)
@@ -17,29 +19,18 @@ def hello_world():
     return 'Hello World!'
 
 @app.route('/article/recent/<int:page>')
-def getRecentArticles(page):
-    items_per_page = request.args.get('limit')
-    if items_per_page:
-        items_per_page = int(items_per_page)
-    else:
-        items_per_page = 20
-    articles = db.qdoc.find(projection={'content': False}).sort('timestamp', pymongo.DESCENDING).limit(items_per_page).skip((page - 1) * items_per_page)
-    articleList = list(articles)
-    for article in articleList:
-        article['_id'] = str(article['_id'])
+def getRecentArticlesByPage(page):
+    articleList = recentArticles(page, 20)
+    return json.dumps(articleList, default=json_util.default)
+
+@app.route('/article/recent/page/<page>/perPage/<perPage>')
+def getRecentArticles(page, perPage):
+    articleList = recentArticles(page, perPage)
     return json.dumps(articleList, default=json_util.default)
 
 @app.route('/article/lasthours/<hours>')
 def getLastHoursArticles(hours):
-    timestamp = time.time()- int(hours)*60*60
-    articles = db.qdoc.find({'timestamp': {'$gte': timestamp}}).limit(10000)
-    articleList = list(articles)
-    articleReturn = []
-    for a in articleList:
-        top = ''
-        if 'topic' in a:
-            top = a['topic']
-            articleReturn.append({'title': a['title'], 'timestamp': a['timestamp'],  'keywords': a['keywords'], 'topic': top, 'source': a['source']})
+    articleList = articlesXHours(hours)
     return json.dumps(articleReturn, default=json_util.default)
 
 @app.route('/article/id/<articleId>')
