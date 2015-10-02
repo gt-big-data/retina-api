@@ -10,10 +10,10 @@ from articleByID import *
 from articlesLastXHrs import *
 from tweetLoad import *
 from articlesRecent import *
+from keywordsCo import *
 
 app = Flask(__name__)
 CORS(app)
-
 @app.route('/')
 def hello_world():
     return 'Hello World!'
@@ -79,19 +79,11 @@ def getTimeSeriesData(keyword):
 
 @app.route('/trending')
 def get_trending_keywords():
-    limit = request.args.get('limit')
-    today = datetime.datetime.now() - datetime.timedelta(hours=24)
-    time_stamp = int(today.strftime('%s'))
-    match = {'$match': {'timestamp': {'$gte': time_stamp}}}
-    project = {'$unwind': '$keywords'}
-    group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
-    sort = {'$sort': {'total': -1}}
-    limit  = {'$limit': 10}
-    pipeline = [match, project, group, sort, limit]
-    query_result = db.qdoc.aggregate(pipeline)
-    front_end_compatable = lambda x: {'keyword': x['_id'], 'total': x['total']}
-    return jsonify(data=map(front_end_compatable, query_result))
+    return trendingKeywords()
 
+@app.route('/cokeywords/<keyword>')
+def get_cokeywords(keyword):
+    return coKeywords(keyword)
 
 @app.route('/tweet/delay/<delay>/amount/<amount>')
 def getTweets(delay, amount):
