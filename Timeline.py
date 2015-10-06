@@ -17,7 +17,7 @@ def keywordTimelineUsingAggregation(keyword):
     sort = {'$sort': {'_id': 1}}
     
     pipeline = [matchKeyword, matchTimestamp, project, group, sort]
-    print list(db.qdoc.aggregate(pipeline))
+    return list(db.qdoc.aggregate(pipeline))
 
 def topicTimelineUsingAggregation(topic):
 
@@ -37,8 +37,10 @@ def topicTimelineUsingAggregation(topic):
     sort = {'$sort': {'_id': 1}}
     
     pipeline = [matchTopic, matchTimestamp, project, group, sort]
-    print list(db.qdoc.aggregate(pipeline))
+    return list(db.qdoc.aggregate(pipeline))
 
 
-keywordTimelineUsingAggregation("obama")
-topicTimelineUsingAggregation(293)
+
+if __name__ == "__main__":
+    print keywordTimelineUsingAggregation("obama")
+    print topicTimelineUsingAggregation(293)

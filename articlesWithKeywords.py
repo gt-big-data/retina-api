@@ -5,6 +5,5 @@ from dbco import *
 from collections import Counter
 
 def getArticlesWithKeywordsFunc(keywordsInput):
-    articlesWithKeywords = list(db.qdoc.find(
-        {'keywords' : { "$in" : keywordsInput}}).limit(10))
+    articlesWithKeywords = list(db.qdoc.find({'keywords' : { "$in" : keywordsInput}}))
     return json.dumps(articlesWithKeywords, default = json_util.default)
