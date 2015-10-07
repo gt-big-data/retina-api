@@ -11,6 +11,7 @@ from articlesLastXHrs import *
 from tweetLoad import *
 from articlesRecent import *
 from keywordsCo import *
+from Timeline import *
 
 app = Flask(__name__)
 CORS(app)
@@ -69,13 +70,15 @@ def getUser():
     """
     pass
 
-@app.route('/article/timeline/:keyword')
-def getTimeSeriesData(keyword):
-    """
-    Get the frequency distribution of articles that contain the keyword. The
-    start and end date will most likely be request parameters.
-    """
-    pass
+@app.route('/article/timeline/<keyword>/days/<days>')
+def keywordTimeline(keyword, days):
+    timeline = getKeywordTimeline(keyword, days)
+    return json.dumps(timeline, default=json_util.default)
+
+@app.route('/tweet/timeline/<keyword>/days/<days>')
+def keywordTweetTimeline(keyword, days):
+    timeline = getKeywordTweetTimeline(keyword, days)
+    return json.dumps(timeline, default=json_util.default)
 
 @app.route('/trending')
 def get_trending_keywords():
