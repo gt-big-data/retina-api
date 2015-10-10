@@ -72,9 +72,13 @@ def keywordTweetTimeline(keyword, days):
     timeline = getKeywordTweetTimeline(keyword, days)
     return json.dumps(timeline, default=json_util.default)
 
-@app.route('/topic/largest/days/<days>/topics/<nbTopics>')
-def getLargestTopics(days, nbTopics):
-    return json.dumps(getLargestXTopicsInYDays(nbTopics, days), default=json_util.default)
+@app.route('/topic/largest/days/<days>/limit/<limit>')
+def getLargestTopics(days, limit):
+    return json.dumps(largestTopics(days, limit), default=json_util.default)
+
+@app.route('/topic/largestTimelines/days/<days>/limit/<limit>')
+def getLargestTopicsTimelines(days, limit):
+    return json.dumps(largestTopicsTimelines(days, limit), default=json_util.default)
 
 @app.route('/topic/timeline/<topic>')
 def getTopicTimeline(topic):

@@ -12,6 +12,7 @@ def getKeywordTimeline(keyword, daysLoad):
     
     match = {'$match': {'timestamp': {'$gte': startTime, '$lt': endTime}, 'keywords': keyword}}
     project = {'$project': {'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
+    
     group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}}}
     sort = {'$sort': {'_id': 1}}
     
@@ -39,32 +40,34 @@ def topicTimeline(topic):
 
     groupToFindRange = {'$group': {'_id': None, 'minTimestamp': {'$min': '$timestamp'}, 'maxTimestamp': {'$max': '$timestamp'}}}
     timeinfo = list(db.qdoc.aggregate([matchTopic,groupToFindRange]))[0]
-    print timeinfo
-    startTime = timeinfo['minTimestamp']
-    endTime = timeinfo['maxTimestamp']
+    startTime = timeinfo['minTimestamp']; endTime = timeinfo['maxTimestamp']
     bucketSize = int((endTime - startTime) / bucketNumber)
     
     matchTimestamp = {'$match': {'timestamp': {'$gte': startTime, '$lt': endTime}}}
-    project = {'$project': {'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
-    group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}}}
-    sort = {'$sort': {'_id': 1}}
+    project = {'$project': {'title': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
+    sort1 = {'$sort': {'timestamp': 1}}
+    group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}, 'headline': {'$first': '$title'}}}
+    sort2 = {'$sort': {'_id': 1}}
     
-    pipeline = [matchTopic, matchTimestamp, project, group, sort]
-    return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
+    pipeline = [matchTopic, matchTimestamp, project, sort1, group, sort2]
+
+    dbRet = list(db.qdoc.aggregate(pipeline))
+
+    return returnObj(dbRet, startTime, endTime, bucketSize)
 
 def returnObj(obj, minTime, maxTime, bucketSize):
     newReturn = []
     minTime = minTime-(minTime%bucketSize); maxTime = maxTime-(maxTime%bucketSize)
     time = minTime; u = 0;
     while time <= maxTime:
-        ob = {'_id': 0, 'count':0}
+        ob = {'_id': 0, 'count':0, 'headline': ''}
         if len(obj) > u:
             ob = obj[u]
         if ob['_id'] == time:
-            newReturn.append({'timestamp': int(ob['_id']), 'count': ob['count']})
+            newReturn.append({'timestamp': int(ob['_id']), 'count': ob['count'], 'headline': ob['headline']})
             u += 1
         else:
-            newReturn.append({'timestamp': int(time), 'count': 0})
+            newReturn.append({'timestamp': int(time), 'count': 0, 'headline': ''})
         time += bucketSize
     return newReturn
 
