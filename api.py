@@ -12,6 +12,7 @@ from tweetLoad import *
 from articlesRecent import *
 from keywordsCo import *
 from Timeline import *
+from getLargestXInY import *
 
 app = Flask(__name__)
 CORS(app)
@@ -61,15 +62,6 @@ def getArticlesWithKeywords(keywords):
     keywords = keywords.split(',')
     return getArticlesWithKeywordsFunc(keywords)
 
-@app.route('/user')
-def getUser():
-    """
-    Get a users info (blocked until we get facebook login working on flask)
-    Params:
-        userId
-    """
-    pass
-
 @app.route('/article/timeline/<keyword>/days/<days>')
 def keywordTimeline(keyword, days):
     timeline = getKeywordTimeline(keyword, days)
@@ -78,6 +70,15 @@ def keywordTimeline(keyword, days):
 @app.route('/tweet/timeline/<keyword>/days/<days>')
 def keywordTweetTimeline(keyword, days):
     timeline = getKeywordTweetTimeline(keyword, days)
+    return json.dumps(timeline, default=json_util.default)
+
+@app.route('/topic/largest/days/<days>/topics/<nbTopics>')
+def getLargestTopics(days, nbTopics):
+    return json.dumps(getLargestXTopicsInYDays(nbTopics, days), default=json_util.default)
+
+@app.route('/topic/timeline/<topic>')
+def getTopicTimeline(topic):
+    timeline = topicTimeline(topic)
     return json.dumps(timeline, default=json_util.default)
 
 @app.route('/trending')

@@ -34,12 +34,12 @@ def getKeywordTweetTimeline(keyword, daysLoad):
     return returnObj(list(db.tweet.aggregate(pipeline)), startTime, endTime, bucketSize)
 
 def topicTimeline(topic):
-
-    bucketNumber = 100
+    topic = int(topic); bucketNumber = 50
     matchTopic = {'$match': {'topic': topic}}
 
     groupToFindRange = {'$group': {'_id': None, 'minTimestamp': {'$min': '$timestamp'}, 'maxTimestamp': {'$max': '$timestamp'}}}
     timeinfo = list(db.qdoc.aggregate([matchTopic,groupToFindRange]))[0]
+    print timeinfo
     startTime = timeinfo['minTimestamp']
     endTime = timeinfo['maxTimestamp']
     bucketSize = int((endTime - startTime) / bucketNumber)

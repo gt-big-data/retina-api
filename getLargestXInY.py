@@ -2,6 +2,7 @@ from dbco import *
 import time
 
 def getLargestXTopicsInYDays(amountTopics, lastDays):
+    amountTopics = int(amountTopics); lastDays = int(lastDays)
     startTime = time.time() - lastDays * 24 * 3600
     endTime = time.time()
     match = {"$match" : {"timestamp" : {"$gt" : startTime, "$lt" : endTime}, 'topic': {'$exists': True}}}
