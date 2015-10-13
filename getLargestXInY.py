@@ -10,21 +10,32 @@ def largestTopics(days, limit):
     group = {"$group" : {"_id" : "$topic", "count" : {"$sum" : 1}}}
     sort = {"$sort" : {"count" : -1}}
     limit = {"$limit" : limit}
-    return list(db.qdoc.aggregate([match, group, sort, limit]))
+    topicCounts = list(db.qdoc.aggregate([match, group, sort, limit]))
+    topicIds = [t['_id'] for t in topicCounts]
+    topics = list(db.topic.find({'_id': {'$in': topicIds}}))
+    topicNames = {}
+    
+    for tu in topics:
+        topicNames[tu['_id']] = ' '.join([kw['keyword'] for kw in tu['keywords']][:3])
+
+    for topic in topicCounts:
+        topic['name'] = topicNames[topic['_id']]
+
+    return topicCounts
 
 def largestTopicsTimelines(days, limit):
-	topicList = [t['_id'] for t in largestTopics(days, limit)]
-	topicNames = {}
-	topics = list(db.topic.find({'_id': {'$in': topicList}}))
-	for tu in topics:
-		topicNames[tu['_id']] = ' '.join([kw['keyword'] for kw in tu['keywords']][:3])
+    topicList = [t['_id'] for t in largestTopics(days, limit)]
+    topicNames = {}
+    topics = list(db.topic.find({'_id': {'$in': topicList}}))
+    for tu in topics:
+        topicNames[tu['_id']] = ' '.join([kw['keyword'] for kw in tu['keywords']][:3])
 
-	timelines = []
-	for topic in topicList:
-		obj = {'name': topicNames[topic], 'topic': topic, 'timeline': topicTimeline(topic)}
-		timelines.append(obj)
+    timelines = []
+    for topic in topicList:
+        obj = {'name': topicNames[topic], 'topic': topic, 'timeline': topicTimeline(topic)}
+        timelines.append(obj)
 
-	return timelines
+    return timelines
 
 if __name__ == "__main__":
     print(getLargestXTopicsInYDays(10, 1))
