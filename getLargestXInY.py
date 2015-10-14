@@ -32,7 +32,7 @@ def largestTopicsTimelines(days, limit):
 
     timelines = []
     for topic in topicList:
-        obj = {'name': topicNames[topic], 'topic': topic, 'timeline': topicTimeline(topic)}
+        obj = {'name': topicNames.get(topic, ''), 'topic': topic, 'timeline': topicTimeline(topic)}
         timelines.append(obj)
 
     return timelines
