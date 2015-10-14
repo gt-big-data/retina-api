@@ -19,7 +19,7 @@ def largestTopics(days, limit):
         topicNames[tu['_id']] = ' '.join([kw['keyword'] for kw in tu['keywords']][:3])
 
     for topic in topicCounts:
-        topic['name'] = topicNames[topic['_id']]
+        topic['name'] = topicNames.get(topic['_id'], '')
 
     return topicCounts
 

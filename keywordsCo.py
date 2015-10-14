@@ -9,7 +9,7 @@ def coKeywords(term):
     sort = {'$sort': {'total': -1}}
     limit  = {'$limit': 10}
     pipeline = [match, project, group, sort, limit]
-    query_result = db.qdoc.aggregate(pipeline)['result']
+    query_result = db.qdoc.aggregate(pipeline)
     
     compatible = lambda x: {'keyword': x['_id'], 'total': x['total']}
     data = [compatible(d) for d in query_result if d['_id'] != term]
@@ -23,6 +23,6 @@ def trendingKeywords():
     sort = {'$sort': {'total': -1}}
     limit  = {'$limit': 10}
     pipeline = [match, project, group, sort, limit]
-    query_result = db.qdoc.aggregate(pipeline)['result']
+    query_result = db.qdoc.aggregate(pipeline)
     front_end_compatable = lambda x: {'keyword': x['_id'], 'total': x['total']}
     return json.dumps(map(front_end_compatable, query_result), default=json_util.default)
