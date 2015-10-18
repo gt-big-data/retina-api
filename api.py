@@ -1,102 +1,84 @@
-import datetime
-from bson import json_util
 from dbco import *
-from flask import Flask, request, jsonify
-import json, pymongo, time
+import flask, json, pymongo, time
+from flask import Flask, request
 from flask.ext.cors import CORS
-from articlesWithKeywords import *
-from articlesFromSource import *
-from articleByID import *
-from articlesLastXHrs import *
-from tweetLoad import *
-from articlesRecent import *
-from keywordsCo import *
-from Timeline import *
-from getLargestXInY import *
+from bson import json_util
+from getArticles import *
+from getKeywords import *
+from getTweets import *
+from getTimeline import *
+from getTopics import *
+from jsonify import *
 
 app = Flask(__name__)
 CORS(app)
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+@app.route('/docs')
+@app.errorhandler(404)
+def documentation(e=1):
+    return flask.render_template('doc.html')
 
 @app.route('/article/recent/<int:page>')
-def getRecentArticlesByPage(page):
-    articleList = recentArticles(page, 20)
-    return json.dumps(articleList, default=json_util.default)
-
+@app.route('/article/recent/page/<int:page>')
 @app.route('/article/recent/page/<page>/perPage/<perPage>')
-def getRecentArticles(page, perPage):
-    articleList = recentArticles(page, perPage)
-    return json.dumps(articleList, default=json_util.default)
+def getRecentArticlesByPage(page, perPage=20):
+    articleList = recentArticlesByPage(page, 20)
+    return jsonify(articleList)
+
+@app.route('/article/id/<articleId>')
+def getArticleById(articleId):
+    return jsonify(articleById(articleId))
+
 
 @app.route('/article/lasthours/<hours>')
 def getLastHoursArticles(hours):
-    articleList = articlesXHours(hours)
-    return json.dumps(articleReturn, default=json_util.default)
-
-@app.route('/article/id/<articleId>')
-def getArticleByIdFunc(articleId):
-    return getArticleById(articleId)
+    return jsonify(articlesXHours(hours))
 
 @app.route('/article/sources')
-def getSourcesList():
-    """ Get a list of all the sources """
-    sources = db.qdoc.distinct('source')
-    return jsonify(data=sources)
+def getSourcesList(): #Get a list of all the sources
+    return jsonify(db.qdoc.distinct('source'))
 
 @app.route('/article/source/<source>/limit/<limit>')
-def getRecentFromSource(source, limit):
-    """ Get <limit> most recent articles from source <source> """
-    return getArticlesFromSource(source, int(limit))
+def getRecentFromSource(source, limit): #Get <limit> most recent articles from source <source>
+    return jsonify(getArticlesFromSource(source, limit))
 
 @app.route('/article/keywords/<keywords>')
-def getArticlesWithKeywords(keywords):
-    """
-    Get articles who share at least one keyword with one of the keywords
-        provided in the params.
-        Params:
-            keywords (list<str>):
-                list of keywords to match
-    """
+def getArticlesWithKeywords(keywords): #Get articles who share at least one keyword with one of the keywords provided in the params.
     keywords = keywords.split(',')
-    return getArticlesWithKeywordsFunc(keywords)
+    return jsonify(articlesWithKeywords(keywords))
 
 @app.route('/article/timeline/<keyword>/days/<days>')
 def keywordTimeline(keyword, days):
-    timeline = getKeywordTimeline(keyword, days)
-    return json.dumps(timeline, default=json_util.default)
+    return jsonify(getKeywordTimeline(keyword, days))
 
-@app.route('/tweet/timeline/<keyword>/days/<days>')
-def keywordTweetTimeline(keyword, days):
-    timeline = getKeywordTweetTimeline(keyword, days)
-    return json.dumps(timeline, default=json_util.default)
 
 @app.route('/topic/largest/days/<days>/limit/<limit>')
 def getLargestTopics(days, limit):
-    return json.dumps(largestTopics(days, limit), default=json_util.default)
+    return jsonify(largestTopics(days, limit))
 
 @app.route('/topic/largestTimelines/days/<days>/limit/<limit>')
 def getLargestTopicsTimelines(days, limit):
-    return json.dumps(largestTopicsTimelines(days, limit), default=json_util.default)
+    return jsonify(largestTopicsTimelines(days, limit))
 
 @app.route('/topic/timeline/<topic>')
 def getTopicTimeline(topic):
-    timeline = topicTimeline(topic)
-    return json.dumps(timeline, default=json_util.default)
+    return jsonify(topicTimeline(topic))
 
 @app.route('/trending')
-def get_trending_keywords():
-    return trendingKeywords()
+def trendingKeywords():
+    return jsonify(getTrendingKeywords())
 
 @app.route('/cokeywords/<keyword>')
-def get_cokeywords(keyword):
-    return coKeywords(keyword)
+def cokeywords(keyword):
+    return jsonify(getCoKeywords(keyword))
 
 @app.route('/tweet/delay/<delay>/amount/<amount>')
 def getTweets(delay, amount):
-    delay = int(delay); amount = int(amount);
-    return loadTweets(delay, amount)
+    return jsonify(loadTweets(delay, amount))
+
+@app.route('/tweet/timeline/<keyword>/days/<days>')
+def keywordTweetTimeline(keyword, days):
+    return jsonify(getKeywordTweetTimeline(keyword, days))
 
 def main():
     app.debug=True

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RetinaNews - Api</title>
+	<style type="text/css">
+		@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+		html, body {
+			height: 100%;
+		}
+		body {
+			padding: 0px;
+			margin: 0px;
+			font-family: 'Open Sans';
+			height: 100%;
+		}
+		#leftMenu {
+			border-right: 1px solid black;
+			width: 400px; height: 100%;
+			background: #f5f5f5;
+			padding-top: 20px;
+			box-sizing: border-box;
+		}
+		#title {
+			text-align: center;
+			font-size: 35px;
+			font-weight: 700;
+		}
+		#subhead {
+			text-align: center;
+			font-size: 15px;
+			font-weight: 300;
+		}
+		.leftMenuItem {
+			padding-left: 20px;
+			line-height: 30px;
+			color: #505050;
+		}
+		.leftMenuItem:hover {color: black;}
+		.requestType {
+			font-weight: 300;
+			font-size: 20px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			padding-left: 10px;
+			color: #a0a0a0;
+		}
+	</style>
+</head>
+<body>
+	<div id="leftMenu">
+		<div id="title">RetinaNews - API</div>
+		<div id="subhead">A (clean) set of news articles and tweets.</div>
+		<div class="requestType">/article/</div>
+			<a class="leftMenuItem" href="#articleByID">/article/id/&lt;articleId&gt;</a><br />
+			<a class="leftMenuItem" href="#articleLastHours">/article/lasthours/&lt;hours&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/sources</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/source/source/&lt;source&gt;/limit/&lt;limit&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/keywords/&lt;keywords&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/keywords/&lt;keywords&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/timeline/&lt;keyword&gt;/days/&lt;days&gt;</a><br />
+		<div class="requestType">/topic/</div>
+			<a class="leftMenuItem" href="#articleSources">/topic/timeline/&lt;topic&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/topic/largest/days/&lt;days&gt;/limit/&lt;limit&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/topic/largestTimelines/days/&lt;days&gt;/limit/&lt;limit&gt;</a><br />
+
+		<div class="requestType">/tweet/</div>
+			<a class="leftMenuItem" href="#articleSources">/tweet/delay/&lt;delay&gt;/amount/&lt;amount&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/tweet/timeline/&lt;keyword&gt;/days/&lt;days&gt;</a><br />
+	</div>
+
+
+</body>
+</html>

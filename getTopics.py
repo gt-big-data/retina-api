@@ -1,6 +1,6 @@
+from getTimeline import *
 from dbco import *
 import time
-from Timeline import *
 
 def largestTopics(days, limit):
     limit = int(limit); days = int(days)
