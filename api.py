@@ -51,7 +51,6 @@ def getArticlesWithKeywords(keywords): #Get articles who share at least one keyw
 def keywordTimeline(keyword, days):
     return jsonify(getKeywordTimeline(keyword, days))
 
-
 @app.route('/topic/largest/days/<days>/limit/<limit>')
 def getLargestTopics(days, limit):
     return jsonify(largestTopics(days, limit))

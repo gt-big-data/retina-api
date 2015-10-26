@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 from bson import json_util
 from dbco import *
-import json
+import json, time
 
 def articleById(articleId):
     return list(db.qdoc.find({'_id': ObjectId(articleId)}))
