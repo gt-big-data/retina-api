@@ -41,8 +41,8 @@ def topicTimeline(topic, bucketNumber=50):
     bucketSize = int((endTime - startTime) / bucketNumber)
     
     matchTimestamp = {'$match': {'timestamp': {'$gte': startTime, '$lt': endTime}}}
-    project = {'$project': {'title': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
-    sort1 = {'$sort': {'timestamp': 1}}
+    project = {'$project': {'title': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}, 'titleScore': {'$ifNull': ['$titleScore', -1]}}}
+    sort1 = {'$sort': {'titleScore': -1}}
     group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}, 'headline': {'$first': '$title'}}}
     sort2 = {'$sort': {'_id': 1}}
     
