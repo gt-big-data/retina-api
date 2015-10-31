@@ -1,57 +1,79 @@
 from getTopics import *
+from getTimeline import *
 from collections import Counter
+import networkx as nx
 from dbco import *
+import numpy as np
 
 def hasNumbers(str):
 	return any(char.isdigit() for char in str)
 
-t = largestTopicsTimelines(2,3)[2]
+def buildTitleImportance(topic):
+	t = topicTimeline(topic)
+	bucketLength = t[1]['timestamp']-t[0]['timestamp']
 
-bucketLength = t['timeline'][1]['timestamp']-t['timeline'][0]['timestamp']
-numBuckets = len(t['timeline'])
+	match = {'$match': {'topic': topic}}
+	project = {'$project': {'_id': True, 'title': True, 'keywords': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketLength]}]}}}
+	sort = {'$sort': {'timestamp': 1}}
 
-match = {'$match': {'topic': t['topic']}}
-project = {'$project': {'title': True, 'keywords': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketLength]}]}}}
-sort = {'$sort': {'timestamp': 1}}
+	articles = list(db.qdoc.aggregate([match, project, sort]))
+	idsFromTitle = {}
+	keywordPerBucket = {}; titlesPerBucket = {}
+	keywordEdges = {}
+	totalKeywords = []
 
-articles = list(db.qdoc.aggregate([match, project, sort]))
-keywordPerBucket = {}
-titlesPerBucket = {}
-totalKeywords = []
+	for a in articles:
+		idsFromTitle[a['title']] = a['_id']
+		thisBucket = int(a['tsMod'])
+		if thisBucket not in keywordPerBucket:
+			keywordPerBucket[thisBucket] = [];
+			titlesPerBucket[thisBucket] = [];
+			keywordEdges[thisBucket] = [];
+		if 'keywords' in a:
+			kws = [k for k in a['keywords'] if ' ' not in k and not hasNumbers(k)][:8]
+			for k1 in kws:
+				keywordEdges[thisBucket].extend([(k1, k2) for k2 in kws if k1 != k2])
 
-for a in articles:
-	thisBucket = int(a['tsMod'])
-	if thisBucket not in keywordPerBucket:
-		keywordPerBucket[thisBucket] = [];
-		titlesPerBucket[thisBucket] = [];
-	if 'keywords' in a:
-		kws = [k for k in a['keywords'] if not hasNumbers(k)]
-		keywordPerBucket[thisBucket].extend(kws)
-		totalKeywords.extend(kws)
-	titlesPerBucket[thisBucket].append(a['title'])
+			keywordPerBucket[thisBucket].extend(kws)
+			totalKeywords.extend(kws)
+		titlesPerBucket[thisBucket].append(a['title'])
 
-totalKeywordsCount = float(len(totalKeywords))
-totalKeywords = Counter(totalKeywords)
+	totalKeywordsCount = float(len(totalKeywords))
+	totalKeywords = Counter(totalKeywords)
 
-i = 1
-for bucket in keywordPerBucket:
-	bucketSize = len(titlesPerBucket[bucket])
-	if bucketSize > 2:
-		print "---------------------------"
-		print "BUCKET ", i, " [size: ", bucketSize, "]", bucketLength
-		keywordPerBucket[bucket] = Counter(keywordPerBucket[bucket])
-		keywordScores = {}
-		for kw in keywordPerBucket[bucket]:
-			# print float(sum(keywordPerBucket[bucket].values()))
-			keywordScores[kw] = (keywordPerBucket[bucket][kw]/float(sum(keywordPerBucket[bucket].values())))/(totalKeywords[kw]/totalKeywordsCount)
-			# print kw, " => ", score
-		bestKw = sorted(keywordScores, key=keywordScores.get, reverse=True)
-		# for kw in bestKw:
-		# 	print kw, " => ", keywordScores[kw]
-		for title in titlesPerBucket[bucket]:
-			words = title.split(' ')
-			titleScore = sum([keywordScores[w] for w in words if w in keywordScores])*pow(0.98, (len(words)-5))
-			print title.encode('utf-8'), "=>", titleScore
-		print "---------------------------"
-		# print bucket, "-> ", keywordPerBucket[bucket]
-	i += 1
+	titleScoreUpdate = db.qdoc.initialize_unordered_bulk_op()
+	for bucket in keywordPerBucket:
+		if len(titlesPerBucket[bucket]) > 0:
+			keywordPerBucket[bucket] = Counter(keywordPerBucket[bucket])
+			keywordScores = {}
+			for kw in keywordPerBucket[bucket]:
+				kw = kw.lower()
+				keywordScores[kw] = (keywordPerBucket[bucket][kw]/float(sum(keywordPerBucket[bucket].values())))/(totalKeywords[kw]/totalKeywordsCount)
+
+			G = nx.Graph()
+			G.add_edges_from(keywordEdges[bucket])
+			PR = nx.pagerank(G)
+
+			titleScores = {}
+			for title in titlesPerBucket[bucket]:
+				words = title.lower().encode('utf-8').translate(None, "-,.!?:;").split(' ')
+				titleScore = sum([keywordScores.get(w,0.0) for w in words])*pow(0.98, (len(words)-5))
+				titlePRScore = sum([PR.get(w,0.0) for w in words])*pow(0.98, (len(words)-5))
+				titleScores[title.encode('utf-8')] = titlePRScore
+				titleScoreUpdate.find({'_id': idsFromTitle[title]}).upsert().update({
+					'$set': {
+						'titleScore': titlePRScore,
+					},
+				})
+	titleScoreUpdate.execute()
+	print topic
+
+match = {'$match': {'topic': {'$exists': True}}}
+project = {'$project': {'_id': True, 'topic': True, 'titleScore': {'$ifNull': ['$titleScore', -1]}}}
+group = {'$group': {'_id': '$topic', 'articleCount': {'$sum': 1}, 'noScoreCount': {'$sum': {'$cond' : {'if': {'$eq': [ "$titleScore", -1 ] }, 'then': 1, 'else': 0 }}}}}
+match2 = {'$match': {'noScoreCount': {'$gt': 2}, 'articleCount': {'$gt': 15}}}
+sort = {'$sort': {'_id': -1}}
+limit = {'$limit': 200}
+topics2Update = list(db.qdoc.aggregate([match, project, group, match2, sort, limit]))
+for t in topics2Update:
+	buildTitleImportance(t['_id'])
