@@ -8,6 +8,8 @@ from getKeywords import *
 from getTweets import *
 from getTimeline import *
 from getTopics import *
+from getGraph import *
+
 from jsonify import *
 
 app = Flask(__name__)
@@ -66,6 +68,10 @@ def getTopicTimeline(topic):
 @app.route('/trending')
 def trendingKeywords():
     return jsonify(getTrendingKeywords())
+
+@app.route('/topics/graph/<date>')
+def getDateGraph(date):
+    return jsonify(dateGraph(date))
 
 @app.route('/cokeywords/<keyword>')
 def cokeywords(keyword):

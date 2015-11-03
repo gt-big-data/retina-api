@@ -1,9 +1,14 @@
-from bson import json_util
-import json
+from bson import json_util, ObjectId
+import json, datetime
+from datetime import datetime
 
 def jsonify(data):
-	for d in data:
-		if '_id' in d:
-			print d
-			d['_id'] = str(d['_id'])
-	return json.dumps(data, default=json_util.default)
+    return JSONEncoder(data).encode(data)
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        if isinstance(o, datetime):
+            return o.isoformat()
+        return json.JSONEncoder.default(self, o)
