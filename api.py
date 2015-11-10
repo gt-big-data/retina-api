@@ -73,6 +73,10 @@ def trendingKeywords():
 def getDateGraph(date):
     return jsonify(dateGraph(date))
 
+@app.route('/articles/graph/startTime/<startTime>/endTime/<endTime>')
+def daterangeGraph(startTime, endTime):
+    return jsonify(dateRangeGraph(startTime, endTime))
+
 @app.route('/cokeywords/<keyword>')
 def cokeywords(keyword):
     return jsonify(getCoKeywords(keyword))
