@@ -2,16 +2,6 @@ from bson.code import Code
 from dbco import *
 import time
 
-def dateGraph(startTime, endTime):
-	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
-	for n in nodes:
-		n['keywords'] = set(n['keywords'])
-	edges = [];
-	for i in range(0,len(nodes)):
-		myEdges = [(nodes[i]['_id'], nodes[j]['_id']) for j in range(i+1,len(nodes)) if len(nodes[i]['keywords']&nodes[j]['keywords'])>=2]
-		edges.extend(myEdges)
-	return {'nodes': nodes, 'edges': edges}
-
 def dateGraphMR(nextDayTs):
 	#this works, it should not be used because it is slow
 	thisDayTs = nextDayTs-2*86400;
