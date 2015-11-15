@@ -54,8 +54,8 @@ def keywordTimeline(keyword, days):
     return jsonify(getKeywordTimeline(keyword, days))
 
 @app.route('/article/graph/start/<start>/end/<end>')
-def daterangeGraph(startTime, endTime):
-    return jsonify(dateRangeGraph(startTime, endTime))
+def daterangeGraph(start, end):
+    return jsonify(dateRangeGraph(start, end))
 
 @app.route('/topic/largest/days/<days>/limit/<limit>')
 def getLargestTopics(days, limit):
