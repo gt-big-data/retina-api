@@ -4,7 +4,7 @@ from dbco import *
 import json, time
 
 def articleById(articleId):
-    return list(db.qdoc.find({'_id': ObjectId(articleId)}))
+    return list(db.qdoc.find({'_id': ObjectId(articleId)}))[0]
 
 def articlesXHours(hours):
     return list(db.qdoc.find({'timestamp': {'$gte': time.time()- int(hours)*60*60}}))

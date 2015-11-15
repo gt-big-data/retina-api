@@ -19,9 +19,22 @@
 			background: #f5f5f5;
 			padding-top: 20px;
 			box-sizing: border-box;
+			position: fixed;
+			z-index: 2;
+		}
+		#mainFrame {
+			position: absolute; top: 0px;
+			box-sizing: border-box;
+			padding-left: 420px;
+			padding-top: 40px;
+			width: 100%;
 		}
 		#title {
 			text-align: center;
+			font-size: 35px;
+			font-weight: 700;
+		}
+		.mainSection {
 			font-size: 35px;
 			font-weight: 700;
 		}
@@ -44,6 +57,16 @@
 			padding-left: 10px;
 			color: #a0a0a0;
 		}
+		.item {
+			padding-bottom: 30px;
+		}
+		.item .title {
+			text-decoration: underline;
+			padding: 10px 0px 0px 0px;
+			line-height: 30px;
+			font-size: 25px;
+			color: #505050;
+		}
 	</style>
 </head>
 <body>
@@ -54,20 +77,92 @@
 			<a class="leftMenuItem" href="#articleByID">/article/id/&lt;articleId&gt;</a><br />
 			<a class="leftMenuItem" href="#articleLastHours">/article/lasthours/&lt;hours&gt;</a><br />
 			<a class="leftMenuItem" href="#articleSources">/article/sources</a><br />
-			<a class="leftMenuItem" href="#articleSources">/article/source/source/&lt;source&gt;/limit/&lt;limit&gt;</a><br />
-			<a class="leftMenuItem" href="#articleSources">/article/keywords/&lt;keywords&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/source/&lt;source&gt;/limit/&lt;limit&gt;</a><br />
 			<a class="leftMenuItem" href="#articleSources">/article/keywords/&lt;keywords&gt;</a><br />
 			<a class="leftMenuItem" href="#articleSources">/article/timeline/&lt;keyword&gt;/days/&lt;days&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/article/graph/start/&lt;start&gt;/end/&lt;end&gt;</a><br />
 		<div class="requestType">/topic/</div>
 			<a class="leftMenuItem" href="#articleSources">/topic/timeline/&lt;topic&gt;</a><br />
 			<a class="leftMenuItem" href="#articleSources">/topic/largest/days/&lt;days&gt;/limit/&lt;limit&gt;</a><br />
 			<a class="leftMenuItem" href="#articleSources">/topic/largestTimelines/days/&lt;days&gt;/limit/&lt;limit&gt;</a><br />
 
 		<div class="requestType">/tweet/</div>
-			<a class="leftMenuItem" href="#articleSources">/tweet/delay/&lt;delay&gt;/amount/&lt;amount&gt;</a><br />
+			<a class="leftMenuItem" href="#articleSources">/tweet/start/&lt;start&gt;/end/&lt;end&gt;</a><br />
 			<a class="leftMenuItem" href="#articleSources">/tweet/timeline/&lt;keyword&gt;/days/&lt;days&gt;</a><br />
 	</div>
-
+	<div id="mainFrame">
+		<div class="mainSection">
+			/article/
+		</div>
+		<div class="item">
+			<div class="title">/article/id/&lt;articleId&gt;</div>
+			Returns the full article in JSON format that matches a given ID.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/id/55f02653a6b867b094a58f1e">http://api.retinanews.net/article/id/55f02653a6b867b094a58f1e</a>
+		</div>
+		<div class="item">
+			<div class="title">/article/lasthours/&lt;hours&gt;</div>
+			Returns all articles in the last <i>&lt;hours&gt;</i> hours.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/lasthours/2">http://api.retinanews.net/article/lasthours/2</a>
+		</div>
+		<div class="item">
+			<div class="title">/article/sources</div>
+			Get a list of all the sources available (cnn, bbc, reuters...)<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/sources">http://api.retinanews.net/article/sources</a>
+		</div>
+		<div class="item">
+			<div class="title">/article/source&lt;source&gt;/limit/&lt;limit&gt;</div>
+			Returns the <i>&lt;limit&gt;</i> most recent articles from source <i>&lt;source&gt;</i>.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/source/france24/limit/2">http://api.retinanews.net/article/source/france24/limit/2</a>
+		</div>
+		<div class="item">
+			<div class="title">/article/keywords/&lt;keywords&gt;</div>
+			<i>&lt;keywords&gt;</i> is a comma separated list of keywords (eg. kw1,kw2,kw3)<br />
+			Returns a list of articles that match at least the keywords in the <i>&lt;keywords&gt;</i> list.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/keywords/greece,refugee">http://api.retinanews.net/article/keywords/greece,refugee</a>
+		</div>
+		<div class="item">
+			<div class="title">/article/timeline/&lt;keyword&gt;/days/&lt;days&gt;</div>
+			Builds a timeline (number of articles per timeslice) for the keyword <i>&lt;keyword&gt;</i> in the last <i>&lt;days&gt;</i> days.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/timeline/obama/days/7">http://api.retinanews.net/article/timeline/obama/days/7</a>
+		</div>
+		<div class="item">
+			<div class="title">/article/graph/start/&lt;start&gt;/end/&lt;end&gt;</div>
+			Returns a graph: list of vertices (articles) and edges (list of tuples of related articles).<br />
+			<i>&lt;start&gt;</i> and <i>&lt;end&gt;</i> are UNIX timestamps<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/article/graph/start/1447525407/end/1447611807">http://api.retinanews.net/article/graph/start/1447525407/end/1447611807</a>
+		</div>
+		<div class="mainSection">
+			/topic/
+		</div>
+		<div class="item">
+			<div class="title">/topic/timeline/&lt;topic&gt;</div>
+			Given a topic number, will return a timeline of counts of articles in that specfic topic per timeslice.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/topic/timeline/2516">http://api.retinanews.net/topic/timeline/2516</a>
+		</div>
+		<div class="item">
+			<div class="title">/topic/largest/days/&lt;days&gt;/limit/&lt;limit&gt;</div>
+			Gives a list of the <i>&lt;limit&gt;</i> largest topics ids in the last <i>&lt;days&gt;</i> days.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/topic/largest/days/3/limit/2">http://api.retinanews.net/topic/largest/days/3/limit/2</a>
+		</div>
+		<div class="item">
+			<div class="title">/topic/largestTimelines/days/&lt;days&gt;/limit/&lt;limit&gt;</div>
+			Gives a list of timelines of the <i>&lt;limit&gt;</i> largest topics ids in the last <i>&lt;days&gt;</i> days.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/topic/largestTimelines/days/3/limit/2">http://api.retinanews.net/topic/largest/days/3/limit/2</a>
+		</div>
+		<div class="mainSection">
+			/tweet/
+		</div>
+		<div class="item">
+			<div class="title">/tweet/start/&lt;start&gt;/end/&lt;end&gt;</div>
+			[<i>&lt;start&gt;</i>, <i>&lt;end&gt;</i>]: UNIX timestamp range to fetch tweets from.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/tweet/start/1447525407/end/1447611807">http://api.retinanews.net/tweet/start/1447525407/end/1447611807</a>
+		</div>
+		<div class="item">
+			<div class="title">/tweet/timeline/&lt;keyword&gt;/days/&lt;days&gt;</div>
+			Returns a timeline in each timeslice of the number of tweets that have the keyword <i>&lt;keyword&gt;</i> in the last <i>&lt;days&gt;</i>.<br />
+			<u>Example:</u> <a target="_new" href="http://api.retinanews.net/tweet/timeline/france/days/5">http://api.retinanews.net/tweet/timeline/france/days/5</a>
+		</div>
+	</div>
 
 </body>
 </html>

@@ -53,6 +53,10 @@ def getArticlesWithKeywords(keywords): #Get articles who share at least one keyw
 def keywordTimeline(keyword, days):
     return jsonify(getKeywordTimeline(keyword, days))
 
+@app.route('/article/graph/start/<start>/end/<end>')
+def daterangeGraph(startTime, endTime):
+    return jsonify(dateRangeGraph(startTime, endTime))
+
 @app.route('/topic/largest/days/<days>/limit/<limit>')
 def getLargestTopics(days, limit):
     return jsonify(largestTopics(days, limit))
@@ -65,25 +69,22 @@ def getLargestTopicsTimelines(days, limit):
 def getTopicTimeline(topic):
     return jsonify(topicTimeline(topic))
 
+@app.route('/topic/graph/<date>')
+def getDateGraph(date):
+    return jsonify(dateGraph(date))
+
 @app.route('/trending')
 def trendingKeywords():
     return jsonify(getTrendingKeywords())
 
-@app.route('/topics/graph/<date>')
-def getDateGraph(date):
-    return jsonify(dateGraph(date))
-
-@app.route('/articles/graph/startTime/<startTime>/endTime/<endTime>')
-def daterangeGraph(startTime, endTime):
-    return jsonify(dateRangeGraph(startTime, endTime))
 
 @app.route('/cokeywords/<keyword>')
 def cokeywords(keyword):
     return jsonify(getCoKeywords(keyword))
 
-@app.route('/tweet/delay/<delay>/amount/<amount>')
-def getTweets(delay, amount):
-    return jsonify(loadTweets(delay, amount))
+@app.route('/tweet/start/<start>/end/<end>')
+def getTweets(start, end):
+    return jsonify(loadTweets(start, end))
 
 @app.route('/tweet/timeline/<keyword>/days/<days>')
 def keywordTweetTimeline(keyword, days):
