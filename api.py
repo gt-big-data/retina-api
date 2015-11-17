@@ -9,6 +9,7 @@ from getTweets import *
 from getTimeline import *
 from getTopics import *
 from getGraph import *
+from TweetsGraph import *
 
 from jsonify import *
 
@@ -72,6 +73,10 @@ def getTopicTimeline(topic):
 @app.route('/topic/graph/<date>')
 def getDateGraph(date):
     return jsonify(dateGraph(date))
+
+@app.route('/topic/tweet')
+def getTweetsGraph():
+    return jsonify(buildNodesAndEdges())
 
 @app.route('/trending')
 def trendingKeywords():
