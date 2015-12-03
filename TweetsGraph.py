@@ -17,7 +17,7 @@ def buildNodesAndEdges():
     nodesList = []
     edgesList = []
     for tweet in tweetsPool:
-        nodesList.append(tweet['guid'])
+        nodesList.append({'keywords': tweet['words'], 'id': tweet['guid'], 'name': tweet['text'], 'source': tweet['author'], 'url': "", 'group': 233})
         for anotherTweet in tweetsPool:
             if (not anotherTweet == tweet) and (numOfSameWords(tweet, anotherTweet) > 2):
                 edgesList.append({'source': tweet['guid'], 'target': anotherTweet['guid'], 'value': numOfSameWords(tweet, anotherTweet)})
