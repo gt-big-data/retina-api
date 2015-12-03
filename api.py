@@ -70,9 +70,9 @@ def getLargestTopicsTimelines(days, limit):
 def getTopicTimeline(topic):
     return jsonify(topicTimeline(topic))
 
-@app.route('/topic/graph/<date>')
-def getDateGraph(date):
-    return jsonify(dateGraph(date))
+@app.route('/topic/graph/<topic>')
+def getTopicGraph(topic):
+    return jsonify(topicGraph(topic))
 
 @app.route('/topic/tweet')
 def getTweetsGraph():
