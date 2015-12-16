@@ -50,6 +50,42 @@ def topicTimeline(topic, bucketNumber=50):
 
     return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
 
+def allSourcesTimeline(bucketSize=86400):
+
+    sourceList = list(db.qdoc.distinct('source'))
+    print sourceList
+    
+    startTime = time.time()-90*86400
+    endTime = time.time()
+    matchSource = {'$match': {'timestamp': {'$gte': startTime, '$lt': endTime}}}
+    project = {'$project': {'source': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
+    group = {'$group': {'_id': {'source': '$source', 'tsMod': '$tsMod'}, 'count': {'$sum': 1}}}
+    sort = {'$sort': {'_id.source': 1, '_id.tsMod': 1}}
+
+    pipeline = [matchSource, project, group, sort]
+    returnList = []
+    fullObj = list(db.qdoc.aggregate(pipeline))
+    for source in sourceList:
+        obj = []
+        for o in fullObj:
+            if o['_id']['source'] == source:
+                obj.append({'_id': o['_id']['tsMod'], 'count': o['count']})
+        returnList.append({'name': source, 'timeline': returnObj(obj, startTime, endTime, bucketSize)})
+    return returnList
+
+def sourceTimeline(source, bucketSize=21600): # 6*3600
+    
+    startTime = time.time()-30*86400
+    endTime = time.time()
+    matchSource = {'$match': {'source': source, 'timestamp': {'$gte': startTime, '$lt': endTime}}}
+    project = {'$project': {'source': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
+    group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}}}
+    sort = {'$sort': {'_id': 1}}
+
+    pipeline = [matchSource, project, group, sort]
+
+    return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
+
 def returnObj(obj, minTime, maxTime, bucketSize):
     newReturn = []
     minTime = minTime-(minTime%bucketSize); maxTime = maxTime-(maxTime%bucketSize)

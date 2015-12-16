@@ -41,6 +41,14 @@ def getLastHoursArticles(hours):
 def getSourcesList(): #Get a list of all the sources
     return jsonify(db.qdoc.distinct('source'))
 
+@app.route('/sources/timeline')
+def getSourcesTimeline(): #Get a timeline for a specific source
+    return jsonify(allSourcesTimeline())
+
+@app.route('/source/<source>/timeline')
+def getSourceTimeline(source): #Get a timeline for a specific source
+    return jsonify(sourceTimeline(source))
+
 @app.route('/article/source/<source>/limit/<limit>')
 def getRecentFromSource(source, limit): #Get <limit> most recent articles from source <source>
     return jsonify(getArticlesFromSource(source, limit))
