@@ -24,7 +24,7 @@ def getKeywordTweetTimeline(keyword, daysLoad, bucketNumber=100):
     bucketSize = int((endTime - startTime) / bucketNumber)
 
     match = {'$match': {'timestamp': {'$gte': startTime, '$lt': endTime}, 'words': keyword}}
-    project = {'$project': {'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}}}
+    project = {'$project': {'content': True, '_id': True, 'tsmod': {'$mod': ['timestamp', 1000]}}}
     group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}}}
     sort = {'$sort': {'_id': 1}}
     
