@@ -1,0 +1,64 @@
+		@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+		html, body {
+			height: 100%;
+		}
+		body {
+			padding: 0px;
+			margin: 0px;
+			font-family: 'Open Sans';
+			height: 100%;
+		}
+		#leftMenu {
+			border-right: 1px solid black;
+			width: 400px; height: 100%;
+			background: #f5f5f5;
+			padding-top: 20px;
+			box-sizing: border-box;
+			position: fixed;
+			z-index: 2;
+		}
+		#mainFrame {
+			position: absolute; top: 0px;
+			box-sizing: border-box;
+			padding-left: 420px;
+			padding-top: 40px;
+			width: 100%;
+		}
+		#title {
+			text-align: center;
+			font-size: 35px;
+			font-weight: 700;
+		}
+		.mainSection {
+			font-size: 35px;
+			font-weight: 700;
+		}
+		#subhead {
+			text-align: center;
+			font-size: 15px;
+			font-weight: 300;
+		}
+		.leftMenuItem {
+			padding-left: 20px;
+			line-height: 30px;
+			color: #505050;
+		}
+		.leftMenuItem:hover {color: black;}
+		.requestType {
+			font-weight: 300;
+			font-size: 20px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			padding-left: 10px;
+			color: #a0a0a0;
+		}
+		.item {
+			padding-bottom: 30px;
+		}
+		.item .title {
+			text-decoration: underline;
+			padding: 10px 0px 0px 0px;
+			line-height: 30px;
+			font-size: 25px;
+			color: #505050;
+		}

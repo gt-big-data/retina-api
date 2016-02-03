@@ -1,0 +1,40 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+body {
+	font-family: 'Open Sans';
+	padding: 0px;
+	margin: 0px;
+}
+#mainTable {
+	border: 1px solid black;
+	margin: auto;
+	margin-top: 100px;
+	max-width: 600px;
+	width: 100%;
+	background: rgba(0,0,0,0.05);
+}
+#title {
+	text-align: center;
+	border-bottom: 1px solid black;
+	padding: 5px 0px;
+	background: rgba(0,0,0,0.05);
+}
+#addTool {
+	border-bottom: 1px solid black;
+	padding: 1px 0px;
+}
+#addTool input {
+	width: 100%;
+	border: none;
+	background: none;
+	padding: 5px 10px;
+}
+.feedRow {
+	border-bottom: 1px solid black;
+	padding: 5px 10px;
+	font-size: 11px;
+}
+.pausePlay {
+	cursor: pointer;
+	float: right;
+	height: 16px;
+}

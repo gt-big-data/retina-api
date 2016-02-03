@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Manage the RetinaNews Feeds</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/manage.css') }}">
+</head>
+<body>
+	<div id="mainTable">
+		<div id="title">Feed URLs for QDoc</div>
+		<div id="addTool">
+			<form id="form1">
+				<input type="text" name="rssAdd" id="rssAdd" placeholder="Add an RSS feed url" />
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ url_for('static',filename='JS/manage.js') }}"></script>
+</body>
+</html>
