@@ -12,7 +12,7 @@ def dateGraph(day):
 
 def dateRangeGraph(startTime, endTime):
 	startTime = int(startTime); endTime = int(endTime)
-	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
+	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}, 'source': {'$ne': 'ap'}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
 	for n in nodes:
 		n['keywords'] = set(n['keywords'])
 		n['name'] = n['title'];
