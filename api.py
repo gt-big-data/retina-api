@@ -1,5 +1,5 @@
 from dbco import *
-import flask, json, pymongo, time
+import flask, json, pymongo, time, logger
 from flask import Flask, request
 from flask.ext.cors import CORS
 from bson import json_util
@@ -11,11 +11,15 @@ from getTopics import *
 from getGraph import *
 from getSources import *
 from TweetsGraph import *
-
 from jsonify import *
 
 app = Flask(__name__)
 CORS(app)
+
+@app.before_request
+def log_request():
+    logger.log(flask.request)
+
 @app.route('/')
 @app.route('/docs')
 @app.errorhandler(404)
@@ -114,7 +118,6 @@ def keywordTweetTimeline(keyword, days):
     return jsonify(getKeywordTweetTimeline(keyword, days))
 
 def main():
-    app.debug=True
     app.run(host='0.0.0.0', port=5000)
 
 if __name__ == '__main__':
