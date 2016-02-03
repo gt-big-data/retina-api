@@ -11,7 +11,7 @@ def dateGraph(day):
 
 def dateRangeGraph(startTime, endTime):
 	startTime = int(startTime); endTime = int(endTime)
-	originalSources = ["reuters.com", "techcrunch.com", "venturebeat.com", "theguardian.com", "cnn.com", "bbc.co.uk", "france24.com", "aljazeera.com", "ap.org", "wikinews.org", "nytimes.com", "euronews.com", "middleeasteye.net", "aa.com.tr", "independent.co.uk", "indiatimes.com", "rt.com", "latimes.com", "mercopress.com", "bnamericas.com", "chinadaily.com.cn", "allafrica.com"]
+	originalSources = ["reuters.com", "theguardian.com", "cnn.com", "bbc.co.uk", "france24.com", "aljazeera.com", "ap.org", "wikinews.org", "nytimes.com", "euronews.com", "middleeasteye.net", "aa.com.tr", "independent.co.uk", "indiatimes.com", "rt.com", "latimes.com", "mercopress.com", "bnamericas.com", "chinadaily.com.cn", "allafrica.com"]
 	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}, 'source': {'$in': originalSources}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
 	for n in nodes:
 		n['keywords'] = set(n['keywords'])
