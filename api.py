@@ -9,6 +9,7 @@ from getTweets import *
 from getTimeline import *
 from getTopics import *
 from getGraph import *
+from getSources import *
 from TweetsGraph import *
 
 from jsonify import *
@@ -20,7 +21,9 @@ CORS(app)
 @app.errorhandler(404)
 def documentation(e=1):
     return flask.render_template('doc.html')
-
+@app.route('/manageFeeds')
+def manageFeeds():
+    return flask.render_template('manage.html')
 @app.route('/article/recent/<int:page>')
 @app.route('/article/recent/page/<int:page>')
 @app.route('/article/recent/page/<page>/perPage/<perPage>')
@@ -32,7 +35,6 @@ def getRecentArticlesByPage(page, perPage=20):
 def getArticleById(articleId):
     return jsonify(articleById(articleId))
 
-
 @app.route('/article/lasthours/<hours>')
 def getLastHoursArticles(hours):
     return jsonify(articlesXHours(hours))
@@ -40,6 +42,15 @@ def getLastHoursArticles(hours):
 @app.route('/article/sources')
 def getSourcesList(): #Get a list of all the sources
     return jsonify(db.qdoc.distinct('source'))
+
+@app.route('/article/feeds')
+def getFeeds(): #Get a list of all the sources
+    return jsonify(sourceList())
+
+@app.route('/feed/updateStatus/<status>')
+def feedUpdateStatus(status): #Get a list of all the sources
+    changeStatus(request.args.get('url', ''), status)
+    return getFeeds()
 
 @app.route('/sources/timeline')
 def getSourcesTimeline(): #Get a timeline for a specific source
@@ -89,7 +100,6 @@ def getTweetsGraph():
 @app.route('/trending')
 def trendingKeywords():
     return jsonify(getTrendingKeywords())
-
 
 @app.route('/cokeywords/<keyword>')
 def cokeywords(keyword):
