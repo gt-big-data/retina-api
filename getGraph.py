@@ -14,7 +14,7 @@ def dateRangeGraph(startTime, endTime):
 	originalSources = ["reuters.com", "theguardian.com", "cnn.com", "bbc.co.uk", "france24.com", "aljazeera.com", "ap.org", "wikinews.org", "nytimes.com", "euronews.com", "middleeasteye.net", "aa.com.tr", "independent.co.uk", "indiatimes.com", "rt.com", "latimes.com", "mercopress.com", "bnamericas.com", "chinadaily.com.cn", "allafrica.com"]
 	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}, 'source': {'$in': originalSources}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
 	for n in nodes:
-		n['keywords'] = set(n['keywords'])
+		n['keywords'] = set(n.get('keywords', []))
 		n['name'] = n['title']
 		n['id'] = n['_id']
 		n['group'] = n.get('topic', int(500*random.random()))
@@ -40,7 +40,7 @@ def topicGraph(topic):
 	topic = int(topic)
 	nodes = list(db.qdoc.find({'topic': topic}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
 	for n in nodes:
-		n['keywords'] = set(n['keywords'])
+		n['keywords'] = set(n.get('keywords', []))
 		n['name'] = n['title']
 		n['id'] = n['_id']
 		n['group'] = n.get('topic', int(500*random.random()));
@@ -61,3 +61,6 @@ def topicGraph(topic):
 	connectNodes = [n for n in nodes if n['id'] in pageWithEdge]	
 
 	return {'nodes': connectNodes, 'edges': edges}
+
+if __name__ == '__main__':
+	print dateRangeGraph(1454698784, 1454785184)
