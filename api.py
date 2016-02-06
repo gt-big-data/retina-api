@@ -12,6 +12,7 @@ from getGraph import *
 from getSources import *
 from TweetsGraph import *
 from jsonify import *
+from favicon import *
 
 app = Flask(__name__)
 CORS(app)
@@ -100,6 +101,10 @@ def getTopicGraph(topic):
 @app.route('/topic/tweet')
 def getTweetsGraph():
     return jsonify(buildNodesAndEdges())
+
+@app.route('/favicon/<source>')
+def getFavicon(source):
+    return get_favicon(source)
 
 @app.route('/trending')
 def trendingKeywords():
