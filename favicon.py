@@ -11,9 +11,13 @@ def get_favicon(source):
 		domain = 'http://'+source
 		urlReturn = getUrl(domain)
 		if 'error' not in urlReturn:
-			icon_link = urlReturn['soup'].find("link", type="image/x-icon")
-			if icon_link is not None:
-				icon_link = icon_link.get('href', '')
+			icon = urlReturn['soup'].find("link", type="image/x-icon")
+			if icon is None:
+				icon = urlReturn['soup'].find("link", rel="shortcut icon")
+			if icon is None:
+				icon = urlReturn['soup'].find("link", rel="icon")
+			if icon is not None:
+				icon_link = icon.get('href', '')
 				icon_link = urljoin(domain, icon_link)
 				icon = urllib2.urlopen(icon_link)
 				with open(fileLoc, 'wb') as f:
