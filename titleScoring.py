@@ -4,7 +4,7 @@ from collections import Counter
 import networkx as nx
 from dbco import *
 import numpy as np
-import time
+import time, datetime
 
 def hasNumbers(str):
 	return any(char.isdigit() for char in str)
@@ -69,7 +69,7 @@ def buildTitleImportance(topic):
 	titleScoreUpdate.execute()
 	print topic
 
-match = {'$match': {'topic': {'$exists': True}, 'timestamp': {'$gte': time.time()-7*24*3600}}}
+match = {'$match': {'topic': {'$exists': True}, 'timestamp': {'$gte': datetime.datetime.now()-datetime.timedelta(days=7)}}}
 project = {'$project': {'_id': True, 'topic': True, 'titleScore': {'$ifNull': ['$titleScore', -1]}}}
 group = {'$group': {'_id': '$topic', 'articleCount': {'$sum': 1}, 'noScoreCount': {'$sum': {'$cond' : {'if': {'$eq': [ "$titleScore", -1 ] }, 'then': 1, 'else': 0 }}}}}
 match2 = {'$match': {'noScoreCount': {'$gt': 2}, 'articleCount': {'$gt': 15}}}

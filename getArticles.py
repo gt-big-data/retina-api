@@ -1,13 +1,13 @@
 from bson.objectid import ObjectId
 from bson import json_util
 from dbco import *
-import json, time
+import json, datetime
 
 def articleById(articleId):
     return list(db.qdoc.find({'_id': ObjectId(articleId)}))[0]
 
 def articlesXHours(hours):
-    return list(db.qdoc.find({'timestamp': {'$gte': time.time()- int(hours)*60*60}}))
+    return list(db.qdoc.find({'timestamp': {'$gte': (datetime.datetime.now()-datetime.timedelta(hours=int(hours)))}}))
 
 def articlesWithKeywords(keywordsInput):
     return list(db.qdoc.find({'keywords' : { "$in" : keywordsInput}}).limit(2000))

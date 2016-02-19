@@ -1,11 +1,11 @@
 from getTimeline import *
 from dbco import *
-import time
+import datetime
 
 def largestTopics(days, limit):
     limit = int(limit); days = int(days)
-    startTime = time.time() - days * 24 * 3600
-    endTime = time.time()
+    endTime = datetime.datetime.now()
+    startTime = endTime - datetime.timedelta(days=days)
     match = {"$match" : {"timestamp" : {"$gt" : startTime, "$lt" : endTime}, 'topic': {'$exists': True}}}
     group = {"$group" : {"_id" : "$topic", "count" : {"$sum" : 1}}}
     sort = {"$sort" : {"count" : -1}}

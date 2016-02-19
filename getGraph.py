@@ -10,7 +10,8 @@ def dateGraph(day):
 	return dateRangeGraph(prevDay, thisDay)
 
 def dateRangeGraph(startTime, endTime):
-	startTime = int(startTime); endTime = int(endTime)
+
+	startTime = datetime.fromtimestamp(int(startTime)); endTime = datetime.fromtimestamp(int(endTime))
 	originalSources = ["reuters.com", "theguardian.com", "cnn.com", "bbc.co.uk", "france24.com", "aljazeera.com", "ap.org", "wikinews.org", "nytimes.com", "euronews.com", "middleeasteye.net", "aa.com.tr", "independent.co.uk", "indiatimes.com", "rt.com", "latimes.com", "mercopress.com", "bnamericas.com", "chinadaily.com.cn", "allafrica.com"]
 	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}, 'source': {'$in': originalSources}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
 	for n in nodes:
@@ -61,6 +62,3 @@ def topicGraph(topic):
 	connectNodes = [n for n in nodes if n['id'] in pageWithEdge]	
 
 	return {'nodes': connectNodes, 'edges': edges}
-
-if __name__ == '__main__':
-	print dateRangeGraph(1454698784, 1454785184)

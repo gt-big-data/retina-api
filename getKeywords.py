@@ -1,9 +1,9 @@
 from dbco import *
 from bson import json_util
-import time, json
+import datetime, json
 
 def getCoKeywords(term):
-    match = {'$match': {'timestamp': {'$gte': time.time()-24*3600}, 'keywords': term}}
+    match = {'$match': {'timestamp': {'$gte': (datetime.datetime.now()-datetime.timedelta(days=1))}, 'keywords': term}}
     project = {'$unwind': '$keywords'}
     group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
     sort = {'$sort': {'total': -1}}
@@ -17,7 +17,7 @@ def getCoKeywords(term):
     return data
 
 def getTrendingKeywords():
-    match = {'$match': {'timestamp': {'$gte': time.time()-24*3600}}}
+    match = {'$match': {'timestamp': {'$gte': (datetime.datetime.now()-datetime.timedelta(days=1))}}}
     project = {'$unwind': '$keywords'}
     group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
     sort = {'$sort': {'total': -1}}

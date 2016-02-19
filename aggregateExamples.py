@@ -1,8 +1,8 @@
 from dbco import *
-import time
+import datetime
 
-endTime = time.time()
-startTime = endTime-3*86400
+endTime = datetime.datetime.now()
+startTime = endTime-datetime.timedelta(days=3)
 
 # Example 1: count the keyword occurrence in a time slice
 match = {"$match": {"timestamp" : {"$gt" : startTime, "$lt" : endTime}}}
@@ -26,19 +26,19 @@ for key in sourceCounts:
 	print key
 
 # Example 3: Most important keywords in each slice of 86400 seconds (1 day) in the last 3 days
-match = {"$match": {"timestamp" : {"$gt" : startTime, "$lt" : endTime}}}
-project = {'$project': {'keywords': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', 86400]}]}}}
-unwind = {"$unwind": '$keywords'}
-group = {'$group': {'_id': {'tsMod': '$tsMod', 'keywords': '$keywords'}, 'count': {'$sum': 1}}}
-match2 = {'$match': {'count': {'$gte': 4}}}
-sort = {'$sort': {'_id.tsmod': 1, 'count': -1}}
-group2 = {'$group': {'_id': '$_id.tsMod', 'dictCount': {'$push': {'keywords': '$_id.keywords', 'count': '$count'}}}}
-sort2 = {'$sort': {'_id': 1}}
+# match = {"$match": {"timestamp" : {"$gt" : startTime, "$lt" : endTime}}}
+# project = {'$project': {'keywords': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', 86400]}]}}}
+# unwind = {"$unwind": '$keywords'}
+# group = {'$group': {'_id': {'tsMod': '$tsMod', 'keywords': '$keywords'}, 'count': {'$sum': 1}}}
+# match2 = {'$match': {'count': {'$gte': 4}}}
+# sort = {'$sort': {'_id.tsmod': 1, 'count': -1}}
+# group2 = {'$group': {'_id': '$_id.tsMod', 'dictCount': {'$push': {'keywords': '$_id.keywords', 'count': '$count'}}}}
+# sort2 = {'$sort': {'_id': 1}}
 
-func = db.qdoc.aggregate([match,project,unwind,group,match2,sort,group2,sort2])
+# func = db.qdoc.aggregate([match,project,unwind,group,match2,sort,group2,sort2])
 
-for day in func:
-	print day['_id']
-	for kw in day['dictCount'][:10]:
-		print kw
-	print "-----------------------------------"
+# for day in func:
+# 	print day['_id']
+# 	for kw in day['dictCount'][:10]:
+# 		print kw
+# 	print "-----------------------------------"

@@ -35,7 +35,7 @@ How do you select articles that have a key named ``topic'' (where the key 'topic
 
 How do you select articles from the last hour?
 ```
-db.qdoc.find({"timestamp":{'$gte':time.time()-3600}}).sort('timestamp', pymongo.DESCENDING)
+db.qdoc.find({"timestamp":{'$gte':datetime.datetime.now()-3600}}).sort('timestamp', pymongo.DESCENDING)
 ```
 
 How do you select the most recent 100 articles?
