@@ -123,7 +123,7 @@ def keywordTweetTimeline(keyword, days):
     return jsonify(getKeywordTweetTimeline(keyword, days))
 
 def main():
-    app.run(host='0.0.0.0', port=4000)
+    app.run(host='0.0.0.0', port=4000) #, debug=True
 
 if __name__ == '__main__':
     main()
