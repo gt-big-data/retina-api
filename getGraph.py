@@ -1,28 +1,18 @@
-from bson.code import Code
-import calendar, datetime, random
-from datetime import *
+from dateutil import parser
 from dbco import *
+import random
 
-def dateGraph(day):
-	thisDay = calendar.timegm(datetime.strptime(day, '%Y-%m-%d').timetuple())
-	prevDay = thisDay - 1.5*24*60*60
-
-	return dateRangeGraph(prevDay, thisDay)
-
-def dateRangeGraph(startTime, endTime):
-
-	startTime = datetime.fromtimestamp(int(startTime)); endTime = datetime.fromtimestamp(int(endTime))
+def kwGraph(startDate, endDate):
+	startDatetime = parser.parse(startDate)
+	endDatetime = parser.parse(endDate)
 	originalSources = ["reuters.com", "theguardian.com", "cnn.com", "bbc.co.uk", "france24.com", "aljazeera.com", "ap.org", "wikinews.org", "nytimes.com", "euronews.com", "middleeasteye.net", "aa.com.tr", "independent.co.uk", "indiatimes.com", "rt.com", "latimes.com", "mercopress.com", "bnamericas.com", "chinadaily.com.cn", "allafrica.com"]
-	nodes = list(db.qdoc.find({'timestamp': {'$gte': startTime, '$lte': endTime}, 'source': {'$in': originalSources}}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
+	match = {'$match': {'timestamp': {'$gte': startDatetime, '$lte': endDatetime}, 'source': {'$in': originalSources}}}
+	proj = {'$project': {'id': '$_id', 'name': '$title', 'group': {'$ifNull': ['$topic', int(500*random.random())]}, 'keywords': 1}}
+
+	nodes = list(db.qdoc.aggregate([match, proj]))
 	for n in nodes:
 		n['keywords'] = set(n.get('keywords', []))
-		n['name'] = n['title']
-		n['id'] = n['_id']
-		n['group'] = n.get('topic', int(500*random.random()))
-		del n['title']
-		del n['_id']
-		if 'topic' in n:
-			del n['topic']
+
 	edges = []; pageWithEdge = set([])
 	for i in range(0,len(nodes)):
 		for j in range(i+1,len(nodes)):
@@ -32,33 +22,24 @@ def dateRangeGraph(startTime, endTime):
 				edges.append({'source': nodes[i]['id'], 'target': nodes[j]['id'], 'value': le})
 	for n in nodes:
 		n['keywords'] = list(n['keywords'])
+	return {'nodes': [n for n in nodes if n['id'] in pageWithEdge], 'edges': edges}
 
-	connectNodes = [n for n in nodes if n['id'] in pageWithEdge]	
+def getTweetsToday():
+    startTime = time.time() - 3600
+    matchTime = {'$match': {'timestamp': {'$gte': startTime}}}
+    return list(db.tweet.aggregate([matchTime]))
 
-	return {'nodes': connectNodes, 'edges': edges}
+def numOfSameWords(tweet1, tweet2):
+    commonWords = set(tweet1['words']) & set(tweet2['words'])
+    return len(commonWords)
 
-def topicGraph(topic):
-	topic = int(topic)
-	nodes = list(db.qdoc.find({'topic': topic}, ['_id', 'keywords', 'source', 'title', 'topic', 'url']))
-	for n in nodes:
-		n['keywords'] = set(n.get('keywords', []))
-		n['name'] = n['title']
-		n['id'] = n['_id']
-		n['group'] = n.get('topic', int(500*random.random()));
-		del n['title']
-		del n['_id']
-		if 'topic' in n:
-			del n['topic']
-	edges = []; pageWithEdge = set([]); 
-	for i in range(0,len(nodes)):
-		for j in range(i+1,len(nodes)):
-			le = len(nodes[i]['keywords']&nodes[j]['keywords'])
-			if le >= 2:
-				pageWithEdge.add(nodes[i]['id']); pageWithEdge.add(nodes[j]['id']);
-				edges.append({'source': nodes[i]['id'], 'target': nodes[j]['id'], 'value': le})
-	for n in nodes:
-		n['keywords'] = list(n['keywords'])
-
-	connectNodes = [n for n in nodes if n['id'] in pageWithEdge]	
-
-	return {'nodes': connectNodes, 'edges': edges}
+def tweetGraph():
+    tweetsPool = getTweetsToday()
+    nodesList = []
+    edgesList = []
+    for tweet in tweetsPool:
+        nodesList.append({'keywords': tweet['words'], 'id': tweet['guid'], 'name': tweet['text'], 'source': tweet['author'], 'url': "", 'group': 233})
+        for anotherTweet in tweetsPool:
+            if (not anotherTweet == tweet) and (numOfSameWords(tweet, anotherTweet) > 2):
+                edgesList.append({'source': tweet['guid'], 'target': anotherTweet['guid'], 'value': numOfSameWords(tweet, anotherTweet)})
+    return {'nodes': nodesList, 'edges': edgesList}

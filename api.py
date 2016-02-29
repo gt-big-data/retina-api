@@ -2,15 +2,8 @@ from dbco import *
 import flask, json, pymongo, time, logger
 from flask import Flask, request
 from flask.ext.cors import CORS
-from bson import json_util
-from getArticles import *
-from getKeywords import *
-from getTweets import *
-from getTimeline import *
-from getTopics import *
-from getGraph import *
-from getSources import *
-from TweetsGraph import *
+import getArticle, getTweets, getKeywords, getSources
+import getTimeline, getGraph, getTopics
 from jsonify import *
 from favicon import *
 
@@ -33,16 +26,15 @@ def manageFeeds():
 @app.route('/article/recent/page/<int:page>')
 @app.route('/article/recent/page/<page>/perPage/<perPage>')
 def getRecentArticlesByPage(page, perPage=20):
-    articleList = recentArticlesByPage(page, 20)
-    return jsonify(articleList)
+    return jsonify(getArticle.recentByPage(page, 20))
 
 @app.route('/article/id/<articleId>')
 def getArticleById(articleId):
-    return jsonify(articleById(articleId))
+    return jsonify(getArticle.byId(articleId))
 
 @app.route('/article/lasthours/<hours>')
 def getLastHoursArticles(hours):
-    return jsonify(articlesXHours(hours))
+    return jsonify(getArticle.byHours(hours))
 
 @app.route('/article/sources')
 def getSourcesList(): #Get a list of all the sources
@@ -50,16 +42,15 @@ def getSourcesList(): #Get a list of all the sources
 
 @app.route('/article/feeds')
 def getFeeds(): #Get a list of all the sources
-    return jsonify(sourceList())
+    return jsonify(getSources.fullList())
 
 @app.route('/feed/updateStatus/<status>')
 def feedUpdateStatus(status): #Get a list of all the sources
-    changeStatus(request.args.get('url', ''), status)
     return getFeeds()
 
 @app.route('/sources/timeline')
 def getSourcesTimeline(): #Get a timeline for a specific source
-    return jsonify(allSourcesTimeline())
+    return jsonify(getTimeline.allSources())
 
 @app.route('/source/<source>/timeline')
 def getSourceTimeline(source): #Get a timeline for a specific source
@@ -67,7 +58,7 @@ def getSourceTimeline(source): #Get a timeline for a specific source
 
 @app.route('/article/source/<source>/limit/<limit>')
 def getRecentFromSource(source, limit): #Get <limit> most recent articles from source <source>
-    return jsonify(getArticlesFromSource(source, limit))
+    return jsonify(getArticle.recentBySource(source, limit))
 
 @app.route('/article/keywords/<keywords>')
 def getArticlesWithKeywords(keywords): #Get articles who share at least one keyword with one of the keywords provided in the params.
@@ -76,31 +67,28 @@ def getArticlesWithKeywords(keywords): #Get articles who share at least one keyw
 
 @app.route('/article/timeline/<keyword>/days/<days>')
 def keywordTimeline(keyword, days):
-    return jsonify(getKeywordTimeline(keyword, days))
+    return jsonify(getTimeline.byKeyword(keyword, days))
 
 @app.route('/article/graph/start/<start>/end/<end>')
 def daterangeGraph(start, end):
-    return jsonify(dateRangeGraph(start, end))
+    return jsonify(getGraph.kwGraph(start, end))
 
 @app.route('/topic/largest/days/<days>/limit/<limit>')
 def getLargestTopics(days, limit):
-    return jsonify(largestTopics(days, limit))
+    return jsonify(getTopics.bySize(days, limit))
 
 @app.route('/topic/largestTimelines/days/<days>/limit/<limit>')
 def getLargestTopicsTimelines(days, limit):
-    return jsonify(largestTopicsTimelines(days, limit))
+    fullObject = [{'name': t['name'], 'topic': t['_id'], 'timeline': getTimeline.byTopic(t['_id'])} for t in getTopics.bySize(days, limit)]
+    return jsonify(fullObject)
 
 @app.route('/topic/timeline/<topic>')
 def getTopicTimeline(topic):
-    return jsonify(topicTimeline(topic))
-
-@app.route('/topic/graph/<topic>')
-def getTopicGraph(topic):
-    return jsonify(topicGraph(topic))
+    return jsonify(getTimeline.byTopic(topic))
 
 @app.route('/topic/tweet')
 def getTweetsGraph():
-    return jsonify(buildNodesAndEdges())
+    return jsonify(getGraph.tweetGraph())
 
 @app.route('/favicon/<source>')
 def getFavicon(source):
@@ -108,15 +96,15 @@ def getFavicon(source):
 
 @app.route('/trending')
 def trendingKeywords():
-    return jsonify(getTrendingKeywords())
+    return jsonify(getKeywords.byTrending())
 
 @app.route('/cokeywords/<keyword>')
 def cokeywords(keyword):
-    return jsonify(getCoKeywords(keyword))
+    return jsonify(getKeywords.coKw(keyword))
 
 @app.route('/tweet/start/<start>/end/<end>')
 def getTweets(start, end):
-    return jsonify(loadTweets(start, end))
+    return jsonify(getTweets.byTimerange(start, end))
 
 @app.route('/tweet/timeline/<keyword>/days/<days>')
 def keywordTweetTimeline(keyword, days):

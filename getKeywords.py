@@ -1,8 +1,8 @@
+from datetime import datetime, timedelta
 from dbco import *
-from bson import json_util
-import datetime, json
+import json
 
-def getCoKeywords(term):
+def coKw(term):
     match = {'$match': {'timestamp': {'$gte': (datetime.datetime.now()-datetime.timedelta(days=1))}, 'keywords': term}}
     project = {'$unwind': '$keywords'}
     group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
@@ -16,8 +16,9 @@ def getCoKeywords(term):
 
     return data
 
-def getTrendingKeywords():
-    match = {'$match': {'timestamp': {'$gte': (datetime.datetime.now()-datetime.timedelta(days=1))}}}
+def byTrending():
+    yesterday = datetime.utcnow()-timedelta(days=1)
+    match = {'$match': {'timestamp': {'$gte': yesterday}}}
     project = {'$unwind': '$keywords'}
     group = {'$group': {'_id': '$keywords', 'total': {'$sum': 1} }}
     sort = {'$sort': {'total': -1}}

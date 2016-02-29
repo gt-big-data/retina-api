@@ -3,7 +3,7 @@ import pymongo, json, time
 from datetime import datetime, timedelta
 from dbco import *
 
-def getKeywordTimeline(keyword, daysLoad, bucketNumber=100):
+def byKeyword(keyword, daysLoad, bucketNumber=100):
 
     endTime = datetime.now()
     startTime = endTime - timedelta(days=int(daysLoad))
@@ -19,7 +19,7 @@ def getKeywordTimeline(keyword, daysLoad, bucketNumber=100):
     pipeline = [match, projTs, project, group, sort]
     return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
 
-def topicTimeline(topic, bucketNumber=50):
+def byTopic(topic, bucketNumber=50):
     topic = int(topic);
     matchTopic = {'$match': {'topic': topic}}
 
@@ -39,7 +39,7 @@ def topicTimeline(topic, bucketNumber=50):
 
     return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
 
-def allSourcesTimeline(bucketSize=86400):
+def allSources(bucketSize=86400):
     endTime = datetime.now()
     startTime = endTime-timedelta(days=90)
     matchRange = {'$match': {'timestamp': {'$gte': startTime, '$lt': endTime}}}
