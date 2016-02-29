@@ -69,12 +69,16 @@ def getArticlesWithKeywords(keywords): #Get articles who share at least one keyw
 def keywordTimeline(keyword, days):
     return jsonify(getTimeline.byKeyword(keyword, days))
 
-@app.route('/article/graph/start/<start>/end/<end>')
+@app.route('/article/kwgraph/start/<start>/end/<end>')
 def daterangeGraph(start, end):
     return jsonify(getGraph.kwGraph(start, end))
 
+@app.route('/article/entgraph/start/<start>/end/<end>')
+def daterangeGraphKw(start, end):
+    return jsonify(getGraph.kwGraph(start, end))
+
 @app.route('/topic/largest/days/<days>/limit/<limit>')
-def getLargestTopics(days, limit):
+def getLargestTopicsEnt(days, limit):
     return jsonify(getTopics.bySize(days, limit))
 
 @app.route('/topic/largestTimelines/days/<days>/limit/<limit>')
@@ -85,10 +89,6 @@ def getLargestTopicsTimelines(days, limit):
 @app.route('/topic/timeline/<topic>')
 def getTopicTimeline(topic):
     return jsonify(getTimeline.byTopic(topic))
-
-@app.route('/topic/tweet')
-def getTweetsGraph():
-    return jsonify(getGraph.tweetGraph())
 
 @app.route('/favicon/<source>')
 def getFavicon(source):
