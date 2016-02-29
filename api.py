@@ -70,12 +70,12 @@ def keywordTimeline(keyword, days):
     return jsonify(getTimeline.byKeyword(keyword, days))
 
 @app.route('/article/kwgraph/start/<start>/end/<end>')
-def daterangeGraph(start, end):
+def daterangeGraphKw(start, end):
     return jsonify(getGraph.kwGraph(start, end))
 
 @app.route('/article/entgraph/start/<start>/end/<end>')
-def daterangeGraphKw(start, end):
-    return jsonify(getGraph.kwGraph(start, end))
+def daterangeGraphEnt(start, end):
+    return jsonify(getGraph.entGraph(start, end))
 
 @app.route('/topic/largest/days/<days>/limit/<limit>')
 def getLargestTopicsEnt(days, limit):
