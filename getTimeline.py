@@ -20,6 +20,7 @@ def byKeyword(keyword, daysLoad, bucketNumber=100):
     return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
 
 def byTopic(topic, bucketNumber=50):
+    originalSources = ["reuters.com", "theguardian.com", "cnn.com", "bbc.co.uk", "france24.com", "aljazeera.com", "ap.org", "wikinews.org", "nytimes.com", "euronews.com", "middleeasteye.net", "aa.com.tr", "independent.co.uk", "indiatimes.com", "rt.com", "latimes.com", "mercopress.com", "bnamericas.com", "chinadaily.com.cn", "allafrica.com"]    
     topic = int(topic);
     matchTopic = {'$match': {'topic': topic}}
 
@@ -27,15 +28,15 @@ def byTopic(topic, bucketNumber=50):
     timeinfo = list(db.qdoc.aggregate([matchTopic,groupToFindRange]))[0]
     startTime = timeinfo['minTimestamp']; endTime = timeinfo['maxTimestamp']
     bucketSize = int((endTime - startTime).total_seconds() / bucketNumber)
-    print bucketSize
-    
+
+    matchSources = {'$match': {'source': {'$in': originalSources}}}
     projTs = {'$project': {'keywords': 1, 'title': 1, 'timestamp': {'$divide': [{'$subtract': ['$timestamp', datetime.fromtimestamp(0)]}, 1000]}}}
     project = {'$project': {'title': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketSize]}]}, 'titleScore': {'$ifNull': ['$titleScore', -1]}}}
     sort1 = {'$sort': {'titleScore': -1}}
     group = {'$group': {'_id': '$tsMod', 'count': {'$sum': 1}, 'headline': {'$first': '$title'}}}
     sort2 = {'$sort': {'_id': 1}}
     
-    pipeline = [matchTopic, projTs, project, sort1, group, sort2]
+    pipeline = [matchTopic, matchSources, projTs, project, sort1, group, sort2]
 
     return returnObj(list(db.qdoc.aggregate(pipeline)), startTime, endTime, bucketSize)
 

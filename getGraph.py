@@ -33,13 +33,13 @@ def entGraph(startDate, endDate):
 
 	nodes = list(db.qdoc.aggregate([match, proj]))
 	for n in nodes:
-		n['keywords'] = set([e['text'] for e in n.get('entities', {})])
+		n['keywords'] = set([e['wdid'] for e in n.get('entities', {}) if e['count'] > 1])
 
 	edges = []; pageWithEdge = set([])
 	for i in range(0,len(nodes)):
 		for j in range(i+1,len(nodes)):
 			le = len(nodes[i]['keywords']&nodes[j]['keywords'])
-			if le >= 6:
+			if le >= 3:
 				pageWithEdge.add(nodes[i]['id']); pageWithEdge.add(nodes[j]['id']);
 				edges.append({'source': nodes[i]['id'], 'target': nodes[j]['id'], 'value': le})
 	for n in nodes:
