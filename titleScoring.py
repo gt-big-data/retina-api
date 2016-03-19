@@ -10,14 +10,15 @@ def hasNumbers(str):
 	return any(char.isdigit() for char in str)
 
 def buildTitleImportance(topic):
-	t = topicTimeline(topic)
+	t = byTopic(topic)
 	bucketLength = t[1]['timestamp']-t[0]['timestamp']
 
 	match = {'$match': {'topic': topic}}
-	project = {'$project': {'_id': True, 'title': True, 'keywords': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketLength]}]}}}
+    projTs = {'$project': {'keywords': 1, 'timestamp': {'$divide': [{'$subtract': ['$timestamp', datetime.datetime.fromtimestamp(0)]}, 1000]}}}
+	project1 = {'$project': {'_id': True, 'title': True, 'keywords': True, 'timestamp': True, 'tsMod': {'$subtract': ['$timestamp', {'$mod': ['$timestamp', bucketLength]}]}}}
 	sort = {'$sort': {'timestamp': 1}}
 
-	articles = list(db.qdoc.aggregate([match, project, sort]))
+	articles = list(db.qdoc.aggregate([match, projTs, project1, sort]))
 	idsFromTitle = {}
 	keywordPerBucket = {}; titlesPerBucket = {}
 	keywordEdges = {}
