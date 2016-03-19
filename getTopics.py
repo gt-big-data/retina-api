@@ -6,7 +6,7 @@ def bySize(days, limit):
     endTime = datetime.utcnow()
     startTime = endTime - timedelta(days=days)
     match = {"$match" : {"timestamp" : {"$gt" : startTime, "$lt" : endTime}, 'topic': {'$exists': True}}}
-    group = {"$group" : {"_id" : "$entTopic", "count" : {"$sum" : 1}}}
+    group = {"$group" : {"_id" : "$topic", "count" : {"$sum" : 1}}}
     sort = {"$sort" : {"count" : -1}}
     limit = {"$limit" : limit}
     topicCounts = list(db.qdoc.aggregate([match, group, sort, limit]))
